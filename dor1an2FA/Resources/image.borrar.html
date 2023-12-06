@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Viewer</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        
+        img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <img id="image" src="" alt="Image">
+    <script>
+        // Función para recibir la URL de la imagen desde el sistema nativo
+        function showImage(url) {
+            var imageElement = document.getElementById("image");
+            imageElement.src = url;
+        }
+    </script>
+</body>
+</html>

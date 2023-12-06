@@ -1,0 +1,1 @@
+This update fixes a crash that could occur when trying to manually enter a token on a 32-bit device (iPhone 5 or earlier).

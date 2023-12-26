@@ -84,6 +84,7 @@ extension TokenEntryForm {
                 [
                     issuerRowModel,
                     nameRowModel,
+                    domainRowModel, //CEB
                     secretRowModel,
                 ],
                 Section(
@@ -119,7 +120,17 @@ extension TokenEntryForm {
             )
         )
     }
-
+//CEB start
+    private var domainRowModel: RowModel {
+        return .textFieldRow(
+            identity: "token.domain",
+            viewModel: TextFieldRowViewModel(
+                domain: domain,
+                changeAction: Action.domain
+            )
+        )
+    }
+//CEB stop
     private var nameRowModel: RowModel {
         return .textFieldRow(
             identity: "token.name",

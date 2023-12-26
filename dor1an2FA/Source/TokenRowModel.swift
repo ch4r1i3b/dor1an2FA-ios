@@ -51,11 +51,12 @@ struct TokenRowModel: Equatable, Identifiable {
         print("issuer:",issuer)
         print("pass:  ",password)
         // CEB
-        if case .counter = persistentToken.token.generator.factor {
+        if case .counter = 	persistentToken.token.generator.factor {
             showsButton = true
         } else {
             showsButton = false
         }
+        //showsButton = false
         buttonAction = .updatePersistentToken(persistentToken)
         selectAction = .copyPassword(rawPassword)
         editAction = .editPersistentToken(persistentToken)

@@ -76,21 +76,7 @@ extension TextFieldRowViewModel {
         self.value = value
         self.changeAction = changeAction
     }
-//CEB start
-    init(domain value: String, changeAction: @escaping (String) -> Action) {
-        label = "Domain"
-        placeholder = "example.com"
 
-        autocapitalizationType = .none
-        autocorrectionType = .no
-        keyboardType = .webSearch
-        returnKeyType = .next
-
-        self.value = value
-        self.changeAction = changeAction
-    }
-
-//CEB stop
     init(secret value: String, changeAction: @escaping (String) -> Action) {
         label = "Secret Key"
         placeholder = "•••• •••• •••• ••••"

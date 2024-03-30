@@ -83,7 +83,11 @@ struct TokenList: Component {
         let options: String.CompareOptions = [.caseInsensitive, .diacriticInsensitive]
         return persistentTokens.filter({
             $0.token.issuer.range(of: filter, options: options) != nil ||
-                $0.token.name.range(of: filter, options: options) != nil
+// CEB start
+//                $0.token.name.range(of: filter, options: options) != nil
+                $0.token.name.range(of: filter, options: options) != nil ||
+                $0.token.domain.range(of: filter, options: options) != nil
+// CEB end
         })
     }
 }

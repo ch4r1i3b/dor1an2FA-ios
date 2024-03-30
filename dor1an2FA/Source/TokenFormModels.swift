@@ -1,4 +1,4 @@
-//
+// 
 //  TokenFormModels.swift
 //  Authenticator
 //
@@ -89,6 +89,21 @@ extension TextFieldRowViewModel {
         self.value = value
         self.changeAction = changeAction
     }
+// CEB Start
+    init(domain value: String, returnKeyType: UIReturnKeyType, changeAction: @escaping (String) -> Action) {
+        label = "Domain Name"
+        placeholder = "domain.com"
+
+        autocapitalizationType = .none
+        autocorrectionType = .no
+        keyboardType = .emailAddress
+        self.returnKeyType = returnKeyType
+
+        self.value = value
+        self.changeAction = changeAction
+    }
+// CEB End
+
 }
 
 extension SegmentedControlRowViewModel {

@@ -90,9 +90,6 @@ extension KeychainTokenStore {
             if $0.identifier == updatedPersistentToken.identifier {
                 return updatedPersistentToken
             }
-        // CEB start
-            print(Token)
-        // CEB end
             return $0
         }
     }

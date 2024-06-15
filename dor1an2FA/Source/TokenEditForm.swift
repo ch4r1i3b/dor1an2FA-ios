@@ -23,6 +23,7 @@
 //  SOFTWARE.
 //
 
+/*
 import OneTimePassword
 
 struct TokenEditForm: Component {
@@ -98,6 +99,16 @@ extension TokenEditForm {
             )
         )
     }
+    
+    private var domain: String
+
+    init(persistentToken: PersistentToken) {
+        self.persistentToken = persistentToken
+        issuer = persistentToken.token.issuer
+        name = persistentToken.token.name
+        domain = persistentToken.token.domain // Initialize domain from persistentToken
+    }
+
 }
 
 // MARK: Actions
@@ -140,3 +151,152 @@ extension TokenEditForm {
         return .saveChanges(token, persistentToken)
     }
 }
+*/
+
+import OneTimePassword
+
+struct TokenEditForm: Component {
+    private let persistentToken: PersistentToken
+
+    private var issuer: String
+    private var name: String
+    // CEB start
+    private var domain: String
+    // CEB end
+
+    private var isValid: Bool {
+        return !(issuer.isEmpty && name.isEmpty)
+    }
+
+    // MARK: Initialization
+
+    init(persistentToken: PersistentToken) {
+        self.persistentToken = persistentToken
+        issuer = persistentToken.token.issuer
+        name = persistentToken.token.name
+        // CEB start
+        domain = persistentToken.token.domain
+        // CEB end
+    }
+}
+
+// MARK: Associated Types
+
+extension TokenEditForm: TableViewModelRepresentable {
+    enum Action {
+        case issuer(String)
+        case name(String)
+        // CEB start
+        case domain(String)
+        // CEB end
+        case cancel
+        case submit
+    }
+
+    typealias HeaderModel = TokenFormHeaderModel<Action>
+    typealias RowModel = TokenFormRowModel<Action>
+}
+
+// MARK: View Model
+
+extension TokenEditForm {
+    typealias ViewModel = TableViewModel<TokenEditForm>
+
+    var viewModel: ViewModel {
+        return TableViewModel(
+            title: "Edit Token",
+            leftBarButton: BarButtonViewModel(style: .cancel, action: .cancel),
+            rightBarButton: BarButtonViewModel(style: .done, action: .submit, enabled: isValid),
+            sections: [
+                [
+                    issuerRowModel,
+                    nameRowModel,
+                    // CEB start
+                    domainRowModel,
+                    // CEB end
+                ],
+            ],
+            doneKeyAction: .submit
+        )
+    }
+
+    private var issuerRowModel: RowModel {
+        return .textFieldRow(
+            identity: "token.issuer",
+            viewModel: TextFieldRowViewModel(
+                issuer: issuer,
+                changeAction: Action.issuer
+            )
+        )
+    }
+
+    private var nameRowModel: RowModel {
+        return .textFieldRow(
+            identity: "token.name",
+            viewModel: TextFieldRowViewModel(
+                name: name,
+                returnKeyType: .done,
+                changeAction: Action.name
+            )
+        )
+    }
+    
+    // CEB start
+    private var domainRowModel: RowModel {
+        return .textFieldRow(
+            identity: "token.domain",
+            viewModel: TextFieldRowViewModel(
+                domain: domain,
+                returnKeyType: .done,
+                changeAction: Action.domain
+            )
+        )
+    }
+    // CEB end
+}
+
+// MARK: Actions
+
+extension TokenEditForm {
+    enum Effect {
+        case cancel
+        case saveChanges(Token, PersistentToken)
+        case showErrorMessage(String)
+    }
+
+    mutating func update(with action: Action) -> Effect? {
+        switch action {
+        case let .issuer(issuer):
+            self.issuer = issuer
+        case let .name(name):
+            self.name = name
+        // CEB start
+        case let .domain(domain):
+            self.domain = domain
+        // CEB end
+        case .cancel:
+            return .cancel
+        case .submit:
+            return submit()
+        }
+        return nil
+    }
+
+    private mutating func submit() -> Effect? {
+        guard isValid else {
+            return .showErrorMessage("An issuer, name, and domain are required.")
+        }
+
+        let token = Token(
+            name: name,
+            issuer: issuer,
+            // CEB start
+            domain: domain,
+            // CEB end
+            generator: persistentToken.token.generator
+        )
+
+        return .saveChanges(token, persistentToken)
+    }
+}
+

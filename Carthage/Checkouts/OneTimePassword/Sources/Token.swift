@@ -34,11 +34,6 @@ public struct Token: Equatable {
     /// A string indicating the provider or service which issued the token.
     public let issuer: String
 
-    // CEB start
-        /// A string indicating the domain name which asks for  the token.
-    public let domain: String
-    // CEB end
-
     /// A password generator containing this token's secret, algorithm, etc.
     public let generator: Generator
 
@@ -47,22 +42,13 @@ public struct Token: Equatable {
     ///
     /// - parameter name:       The account name for the token (defaults to "").
     /// - parameter issuer:     The entity which issued the token (defaults to "").
-// CEB start
-    /// - parameter domain:     The domain which issued the token (defaults to "").
-// CEB end
     /// - parameter generator:  The password generator.
     ///
     /// - returns: A new token with the given parameters.
-// CEB start
-//    public init(name: String = "", issuer: String = "", generator: Generator) {
-    public init(name: String = "", issuer: String = "", domain: String = "", generator: Generator) {
-// CEB end
+    public init(name: String = "", issuer: String = "", generator: Generator) {
         self.name = name
         self.issuer = issuer
         self.generator = generator
-// CEB start
-        self.domain = domain
-// CEB end
     }
 
     // MARK: Password Generation
@@ -81,9 +67,6 @@ public struct Token: Equatable {
 
     /// - returns: A new `Token`, configured to generate the next password.
     public func updatedToken() -> Token {
-// CEB start
-//        return Token(name: name, issuer: issuer, generator: generator.successor())
-        return Token(name: name, issuer: issuer, domain: domain, generator: generator.successor())
-// CEB end
+        return Token(name: name, issuer: issuer, generator: generator.successor())
     }
 }

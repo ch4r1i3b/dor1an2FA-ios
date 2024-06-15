@@ -228,9 +228,6 @@ class AppController {
         }
     }
 }
-
-// CEB start
-/*
 private extension Token {
     var displayName: String? {
         switch (!name.isEmpty, !issuer.isEmpty) {
@@ -245,30 +242,7 @@ private extension Token {
         }
     }
 }
-*/
-private extension Token {
-    var displayName: String? {
-        switch (!name.isEmpty, !issuer.isEmpty, !domain.isEmpty) {
-        case (true, true, true):
-            return "\(issuer): \(name): \(domain)"
-        case (true, false, false):
-            return name
-        case (false, true, false):
-            return issuer
-        case (false, false, true):
-            return domain
-        case (false, true, true):
-            return "\(issuer): \(domain)"
-        case (true, false, true):
-            return "\(name): \(domain)"
-        case (true, true, false):
-            return "\(name): \(issuer)"
-        case (false, false, false):
-            return nil
-        }
-    }
-}
-// CEB end
+
 
 
 private extension DisplayTime {

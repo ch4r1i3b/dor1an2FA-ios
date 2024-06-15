@@ -757,10 +757,10 @@
 				BUNDLE_DISPLAY_NAME = "${PRODUCT_NAME} ∆";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = TP8RJ8MNE5;
+				DEVELOPMENT_TEAM = G2XJ6UNLG6;
 				INFOPLIST_FILE = dor1an2FA/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = dor1an2FA;
-				PRODUCT_BUNDLE_IDENTIFIER = me.mirresp.dor1an2FA.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = me.ch4r1i3b.dor1an2FA.dev;
 				PRODUCT_NAME = dor1an2FA;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -779,10 +779,10 @@
 				BUNDLE_DISPLAY_NAME = "${PRODUCT_NAME}";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = TP8RJ8MNE5;
+				DEVELOPMENT_TEAM = G2XJ6UNLG6;
 				INFOPLIST_FILE = dor1an2FA/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = dor1an2FA;
-				PRODUCT_BUNDLE_IDENTIFIER = me.mirresp.dor1an2FA;
+				PRODUCT_BUNDLE_IDENTIFIER = me.ch4r1i3b.dor1an2FA;
 				PRODUCT_NAME = dor1an2FA;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;

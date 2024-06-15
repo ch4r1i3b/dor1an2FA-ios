@@ -30,15 +30,8 @@ struct TokenEditForm: Component {
 
     private var issuer: String
     private var name: String
-    // CEB start
-    private var domain: String
-    // CEB end
-
     private var isValid: Bool {
-    // CEB start
-    //    return !(issuer.isEmpty && name.isEmpty)
-        return !(issuer.isEmpty && name.isEmpty && domain.isEmpty)
-    // CEB end
+        return !(issuer.isEmpty && name.isEmpty)
     }
 
     // MARK: Initialization
@@ -47,9 +40,6 @@ struct TokenEditForm: Component {
         self.persistentToken = persistentToken
         issuer = persistentToken.token.issuer
         name = persistentToken.token.name
-    // CEB start
-        domain = persistentToken.token.domain
-    // CEB end
     }
 }
 
@@ -59,9 +49,6 @@ extension TokenEditForm: TableViewModelRepresentable {
     enum Action {
         case issuer(String)
         case name(String)
-    // CEB start
-        case domain(String)
-    // CEB end
         case cancel
         case submit
     }
@@ -84,9 +71,6 @@ extension TokenEditForm {
                 [
                     issuerRowModel,
                     nameRowModel,
-        // CEB start
-                    domainRowModel,
-        // CEB end
                 ],
             ],
             doneKeyAction: .submit
@@ -113,20 +97,7 @@ extension TokenEditForm {
                 changeAction: Action.name
             )
         )
-    }    
-    // CEB start
-    private var domainRowModel: RowModel {
-        return .textFieldRow(
-            identity: "token.domain",
-            viewModel: TextFieldRowViewModel(
-                domain: domain,
-                // TODO: Change the behavior of the return key based on validation of the form.
-                returnKeyType: .done,
-                changeAction: Action.domain
-            )
-        )
     }
-    // CEB end
 }
 
 // MARK: Actions
@@ -138,24 +109,23 @@ extension TokenEditForm {
         case showErrorMessage(String)
     }
 
+    
     mutating func update(with action: Action) -> Effect? {
-        switch action {
-        case let .issuer(issuer):
-            self.issuer = issuer
-        case let .name(name):
-            self.name = name
-// CEB start
-        case let .domain(domain):
-            self.domain = domain
-// CEB end
-        case .cancel:
-            return .cancel
-        case .submit:
-            return submit()
+            switch action {
+            case let .issuer(issuer):
+                self.issuer = issuer
+            case let .name(name):
+                self.name = name
+            case .cancel:
+                return .cancel
+            case .submit:
+                return submit()
+            }
+            return nil
         }
-        return nil
-    }
-
+    
+    
+    
     private mutating func submit() -> Effect? {
         guard isValid else {
             return .showErrorMessage("An issuer or name is required.")
@@ -164,15 +134,9 @@ extension TokenEditForm {
         let token = Token(
             name: name,
             issuer: issuer,
-        // CEB Start
-            domain: domain,
-        // CEB end
             generator: persistentToken.token.generator
         )
-        // CEB Start
-        print(token, domain);
-        // CEB end
-        
+
         return .saveChanges(token, persistentToken)
     }
 }

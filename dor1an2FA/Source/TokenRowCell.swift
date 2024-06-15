@@ -205,25 +205,14 @@ class TokenRowCell: UITableViewCell {
     private func updateAppearance(with rowModel: TokenRowModel?) {
         let name = rowModel?.name ?? ""
         let issuer = rowModel?.issuer ?? ""
-    // CEB start
-    // muestro o no el dominio?
-        let domain = rowModel?.domain ?? ""
-    // CEB stop
         let password = rowModel?.password ?? ""
         let showsButton = rowModel?.showsButton ?? false
-    // CEB start
-    // muestro o no el dominio?
-    //    setName(name, issuer: issuer)
-        setName(name, issuer: issuer, domain: domain)
-    // CEB end
+        setName(name, issuer: issuer)
         setPassword(password)
         nextPasswordButton.isHidden = !showsButton
     }
 
-    // CEB start
-    // muestro o no el dominio?
-    //private func setName(_ name: String, issuer: String) {
-    private func setName(_ name: String, issuer: String, domain: String) {
+    private func setName(_ name: String, issuer: String) {
         let titleString = NSMutableAttributedString()
         if !issuer.isEmpty {
             let issuerAttributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15, weight: .medium)]
@@ -235,15 +224,6 @@ class TokenRowCell: UITableViewCell {
         if !name.isEmpty {
             titleString.append(NSAttributedString(string: name))
         }
-        // CEB start
-        // muestro o no el dominio?
-        if !issuer.isEmpty && !name.isEmpty && !domain.isEmpty {
-            titleString.append(NSAttributedString(string: " "))
-        }
-        if !domain.isEmpty {
-            titleString.append(NSAttributedString(string: domain))
-        }
-        // CEB end
         titleLabel.attributedText = titleString
     }
     // CEB

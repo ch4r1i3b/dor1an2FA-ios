@@ -34,9 +34,6 @@ struct TokenEntryForm: Component {
     private var issuer: String = ""
     private var name: String = ""
     private var secret: String = ""
-// CEB start
-    private var domain: String = ""
-// CEB end
     private var tokenType: TokenType = .timer
     private var digitCount: Int = 6
     private var algorithm: Generator.Algorithm = .sha1
@@ -44,10 +41,7 @@ struct TokenEntryForm: Component {
     private var showsAdvancedOptions: Bool = false
 
     private var isValid: Bool {
-// CEB start
-//        return !secret.isEmpty && !(issuer.isEmpty && name.isEmpty)
-        return !secret.isEmpty && !(issuer.isEmpty && name.isEmpty && domain.isEmpty) != nil
-// CEB end
+        return !secret.isEmpty && !(issuer.isEmpty && name.isEmpty)
     }
 
     // MARK: Initialization
@@ -63,9 +57,6 @@ extension TokenEntryForm: TableViewModelRepresentable {
         case issuer(String)
         case name(String)
         case secret(String)
-// CEB start
-        case domain(String)
-// CEB stop
         case tokenType(TokenType)
         case digitCount(Int)
         case algorithm(Generator.Algorithm)
@@ -94,9 +85,6 @@ extension TokenEntryForm {
                     issuerRowModel,
                     nameRowModel,
                     secretRowModel,
-// CEB start
-                    domainRowModel,
-// CEB stop
                 ],
                 Section(
                     header: advancedSectionHeader,
@@ -154,19 +142,6 @@ extension TokenEntryForm {
         )
     }
 
-// CEB start
-    private var domainRowModel: RowModel { // Define domain name row model
-        return .textFieldRow(
-            identity: "token.domain",
-            viewModel: TextFieldRowViewModel(
-                domain: domain,
-                returnKeyType: .next,
-                changeAction: Action.domain
-            )
-        )
-    }
-// CEB stop
-
     private var tokenTypeRowModel: RowModel {
         return .segmentedControlRow(
             identity: "token.tokenType",
@@ -215,10 +190,6 @@ extension TokenEntryForm {
             self.name = name
         case let .secret(secret):
             self.secret = secret
-        // CEB Start
-        case let .domain(domain):
-            self.domain = domain
-        // CEB End
         case let .tokenType(tokenType):
             self.tokenType = tokenType
         case let .digitCount(digitCount):
@@ -267,9 +238,6 @@ extension TokenEntryForm {
         let token = Token(
             name: name,
             issuer: issuer,
-// CEB start
-            domain: domain,
-// CEB end
             generator: generator
         )
         print("token: ", token)

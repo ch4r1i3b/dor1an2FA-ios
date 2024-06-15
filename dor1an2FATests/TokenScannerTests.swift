@@ -24,7 +24,7 @@
 //
 
 import XCTest
-@testable import Authenticator
+//@testable import Authenticator
 import OneTimePassword
 
 class TokenScannerTests: XCTestCase {

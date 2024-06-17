@@ -28,7 +28,10 @@ import OneTimePassword
 
 struct TokenRowModel: Equatable, Identifiable {
     typealias Action = TokenList.Action
-    let name, issuer, password: String
+    //CEB start
+    //let name, issuer, password: String
+    let name, issuer, domain, password: String
+    //CEB end
     let showsButton: Bool
     let canReorder: Bool
     let buttonAction: Action
@@ -43,16 +46,18 @@ struct TokenRowModel: Equatable, Identifiable {
 
         name = persistentToken.token.name
         issuer = persistentToken.token.issuer
+        //CEB start
+        domain = persistentToken.token.domain
+        //CEB end
         password = TokenRowModel.chunkPassword(rawPassword, chunkSize: digitGroupSize)
-        // CEB
-        /*
+        //CEB start
         print("---------")
         print("name:  ",name)
         print("issuer:",issuer)
         print("pass:  ",password)
         print("domain:",domain)
-        */
-        // CEB
+        print("---------")
+        // CEB end
         if case .counter = 	persistentToken.token.generator.factor {
             showsButton = true
         } else {

@@ -65,7 +65,7 @@ class AppController {
                     keychain: Keychain.sharedInstance,
                     userDefaults: UserDefaults.standard
                 )
-                print("store: ",store)
+                print("***** store: ",store)
             }
         } catch {
             // If the TokenStore could not be created, the app is unusable.

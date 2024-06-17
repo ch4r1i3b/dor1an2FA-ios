@@ -90,13 +90,18 @@ extension KeychainTokenStore {
             if $0.identifier == updatedPersistentToken.identifier {
                 return updatedPersistentToken
             }
+
             return $0
         }
     }
 
     func updatePersistentToken(_ persistentToken: PersistentToken) throws {
         let newToken = persistentToken.token.updatedToken()
+        //CEB start
+        print(">>>>>>>>> persistentToken= ",newToken)
+        //CEB end
         try saveToken(newToken, toPersistentToken: persistentToken)
+
     }
 
     func moveTokenFromIndex(_ origin: Int, toIndex destination: Int) {

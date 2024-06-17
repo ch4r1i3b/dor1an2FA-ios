@@ -487,10 +487,12 @@ extension TokenEntryForm {
         let token = Token(
             name: name,
             issuer: issuer,
+            //CEB start
             domain: domain, // Include domain
+            //CEB end
             generator: generator
         )
-        print("token: ", token)
+        print("******* token en TokenEntryForm: ", token)
         return .saveNewToken(token)
     }
 }

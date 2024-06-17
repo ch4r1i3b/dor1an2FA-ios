@@ -87,7 +87,7 @@ public struct Token: Equatable {
 
     // CEB start
     /// A string indicating the domain associated with the token.
-    public let domain: String  // Add this line to include domain
+    public let domain: String
     // CEB end
 
     /// A password generator containing this token's secret, algorithm, etc.

@@ -165,7 +165,7 @@ struct TokenEditForm: Component {
     // CEB end
 
     private var isValid: Bool {
-        return !(issuer.isEmpty && name.isEmpty)
+        return !(issuer.isEmpty && name.isEmpty) //CEB falta domain.isEmpty
     }
 
     // MARK: Initialization
@@ -229,18 +229,6 @@ extension TokenEditForm {
             )
         )
     }
-
-    private var nameRowModel: RowModel {
-        return .textFieldRow(
-            identity: "token.name",
-            viewModel: TextFieldRowViewModel(
-                name: name,
-                returnKeyType: .done,
-                changeAction: Action.name
-            )
-        )
-    }
-    
     // CEB start
     private var domainRowModel: RowModel {
         return .textFieldRow(
@@ -253,6 +241,19 @@ extension TokenEditForm {
         )
     }
     // CEB end
+    
+    private var nameRowModel: RowModel {
+        return .textFieldRow(
+            identity: "token.name",
+            viewModel: TextFieldRowViewModel(
+                name: name,
+                returnKeyType: .done,
+                changeAction: Action.name
+            )
+        )
+    }
+    
+
 }
 
 // MARK: Actions
@@ -295,7 +296,9 @@ extension TokenEditForm {
             // CEB end
             generator: persistentToken.token.generator
         )
-
+        //CEB start
+        print("******* token en TokenEditForm = ",token)
+        //CEB end
         return .saveChanges(token, persistentToken)
     }
 }

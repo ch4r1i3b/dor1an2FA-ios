@@ -165,7 +165,10 @@ struct TokenEditForm: Component {
     // CEB end
 
     private var isValid: Bool {
-        return !(issuer.isEmpty && name.isEmpty) //CEB falta domain.isEmpty
+// CEB start
+//        return !(issuer.isEmpty && name.isEmpty) //CEB falta domain.isEmpty
+        return !(issuer.isEmpty && name.isEmpty && domain.isEmpty)
+// CEB stop
     }
 
     // MARK: Initialization
@@ -297,7 +300,7 @@ extension TokenEditForm {
             generator: persistentToken.token.generator
         )
         //CEB start
-        print("******* token en TokenEditForm = ",token)
+        //print(">>>>>> token en TokenEditForm = ",token)
         //CEB end
         return .saveChanges(token, persistentToken)
     }

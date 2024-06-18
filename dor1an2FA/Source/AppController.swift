@@ -65,7 +65,7 @@ class AppController {
                     keychain: Keychain.sharedInstance,
                     userDefaults: UserDefaults.standard
                 )
-                print("***** store: ",store)
+                //print(">>>> store: ",store)
             }
         } catch {
             // If the TokenStore could not be created, the app is unusable.
@@ -228,6 +228,8 @@ class AppController {
         }
     }
 }
+//CEB start
+/*
 private extension Token {
     var displayName: String? {
         switch (!name.isEmpty, !issuer.isEmpty) {
@@ -242,8 +244,31 @@ private extension Token {
         }
     }
 }
+*/
+private extension Token {
+    var displayName: String? {
+        switch (!name.isEmpty, !issuer.isEmpty, !domain.isEmpty) {
+        case (true, true, true):
+            return "\(issuer): \(name) [\(domain)]" // Format to include domain distinctly
+        case (true, true, false):
+            return "\(issuer): \(name)"
+        case (true, false, true):
+            return "\(name) [\(domain)]"
+        case (false, true, true):
+            return "\(issuer) [\(domain)]"
+        case (true, false, false):
+            return name
+        case (false, true, false):
+            return issuer
+        case (false, false, true):
+            return "[\(domain)]" // Only domain is available
+        case (false, false, false):
+            return nil
+        }
+    }
+}
 
-
+//CEB end
 
 private extension DisplayTime {
     static func currentDisplayTime() -> DisplayTime {

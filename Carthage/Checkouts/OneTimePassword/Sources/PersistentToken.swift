@@ -33,7 +33,6 @@ public struct PersistentToken: Equatable, Hashable {
     public let token: Token
     /// The keychain's persistent identifier for the saved token.
     public let identifier: Data
-
     /// Initializes a new `PersistentToken` with the given properties.
     internal init(token: Token, identifier: Data) {
         self.token = token

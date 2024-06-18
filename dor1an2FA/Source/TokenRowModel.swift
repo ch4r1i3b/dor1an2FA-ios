@@ -51,12 +51,14 @@ struct TokenRowModel: Equatable, Identifiable {
         //CEB end
         password = TokenRowModel.chunkPassword(rawPassword, chunkSize: digitGroupSize)
         //CEB start
+        /*
         print("---------")
         print("name:  ",name)
         print("issuer:",issuer)
         print("pass:  ",password)
         print("domain:",domain)
         print("---------")
+        */
         // CEB end
         if case .counter = 	persistentToken.token.generator.factor {
             showsButton = true

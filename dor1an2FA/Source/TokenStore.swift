@@ -86,6 +86,7 @@ extension KeychainTokenStore {
     func saveToken(_ token: Token, toPersistentToken persistentToken: PersistentToken) throws {
         let updatedPersistentToken = try keychain.update(persistentToken, with: token)
         // Update the in-memory token, which is still the origin of the table view's data
+
         persistentTokens = persistentTokens.map {
             if $0.identifier == updatedPersistentToken.identifier {
                 return updatedPersistentToken
@@ -93,6 +94,9 @@ extension KeychainTokenStore {
 
             return $0
         }
+        //CEB start
+        //print (">>>> persistentToken = ",persistentToken)
+        //CEB stop
     }
 
     func updatePersistentToken(_ persistentToken: PersistentToken) throws {

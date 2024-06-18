@@ -316,10 +316,10 @@ extension TokenEntryForm {
                 [
                     issuerRowModel,
                     nameRowModel,
-                    secretRowModel,
                     // CEB start
                     domainRowModel,
                     // CEB end
+                    secretRowModel,
                 ],
                 Section(
                     header: advancedSectionHeader,
@@ -492,7 +492,7 @@ extension TokenEntryForm {
             //CEB end
             generator: generator
         )
-        print("******* token en TokenEntryForm: ", token)
+        //print(">>>>> token en TokenEntryForm: ", token)
         return .saveNewToken(token)
     }
 }

@@ -65,6 +65,9 @@ public final class Keychain {
     /// - returns: The new persistent token.
     public func add(_ token: Token) throws -> PersistentToken {
         let attributes = try token.keychainAttributes()
+        // CEB start
+        print("CEB>>> Attempting to add token to Keychain: \(token)") // Debugging statement
+        // CEB end
         let persistentRef = try addKeychainItem(withAttributes: attributes)
         return PersistentToken(token: token, identifier: persistentRef)
     }
@@ -78,6 +81,10 @@ public final class Keychain {
     /// - returns: The updated persistent token.
     public func update(_ persistentToken: PersistentToken, with token: Token) throws -> PersistentToken {
         let attributes = try token.keychainAttributes()
+        // CEB start
+        print("CEB>>> Attempting to update token in Keychain: \(token)",attributes) // Debugging statement
+        print("CEB>>> persistentToken.identifier= ",persistentToken.identifier)
+        // CEB end
         try updateKeychainItem(forPersistentRef: persistentToken.identifier,
                                withAttributes: attributes)
         return PersistentToken(token: token, identifier: persistentToken.identifier)
@@ -110,8 +117,13 @@ public final class Keychain {
 
 // MARK: - Private
 
+
+
 private let kOTPService = "me.mattrubin.onetimepassword.token"
 private let urlStringEncoding = String.Encoding.utf8
+
+
+
 
 private extension Token {
     func keychainAttributes() throws -> [String: AnyObject] {
@@ -123,6 +135,7 @@ private extension Token {
             kSecAttrGeneric as String:  data as NSData,
             kSecValueData as String:    generator.secret as NSData,
             kSecAttrService as String:  kOTPService as NSString,
+
         ]
     }
 }
@@ -186,7 +199,10 @@ private func updateKeychainItem(forPersistentRef persistentRef: Data,
     ]
 
     let resultCode = SecItemUpdate(queryDict as CFDictionary, attributesToUpdate as CFDictionary)
-
+//CEB start
+    print("CEB>>> queryDict = ",queryDict)
+    print("CEB>>> attributesToUpdate = ",attributesToUpdate.values)
+//CEB end
     guard resultCode == errSecSuccess else {
         throw Keychain.Error.systemError(resultCode)
     }

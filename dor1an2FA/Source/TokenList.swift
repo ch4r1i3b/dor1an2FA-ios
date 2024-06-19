@@ -51,8 +51,12 @@ struct TokenList: Component {
 
     func viewModel(with persistentTokens: [PersistentToken], at displayTime: DisplayTime, digitGroupSize: Int) -> (viewModel: TokenListViewModel, nextRefreshTime: Date) {
         let isFiltering = !(filter ?? "").isEmpty
-        let rowModels = filteredTokens(from: persistentTokens).map({
-            // CEB start
+// CEB start
+//        let rowModels = filteredTokens(from: persistentTokens).map({
+         // Correct the map operation to use the correct lambda syntax and variable capture
+        let rowModels = persistentTokens.map { persistentToken -> TokenRowModel in // Correct lambda capture
+// CEB end
+           // CEB start
             print("Retrieving PersistentToken: \(persistentToken.token.name), Issuer: \(persistentToken.token.issuer)") // Add domain if necessary
             // CEB end
             TokenRowModel(persistentToken: $0,

@@ -22,7 +22,13 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 //
+/*
+Can you help me to modify the TokenList.swift file so it prints the contents of each PersistentToken saved
+at the moment it is retrieved from the KeyChain?
+Please, remember to mark each modification with //CEB start and // CEB end.
+*/
 
+//  TokenList.swift
 import Foundation
 import UIKit
 import MobileCoreServices
@@ -52,6 +58,10 @@ struct TokenList: Component {
     func viewModel(with persistentTokens: [PersistentToken], at displayTime: DisplayTime, digitGroupSize: Int) -> (viewModel: TokenListViewModel, nextRefreshTime: Date) {
         let isFiltering = !(filter ?? "").isEmpty
         let rowModels = filteredTokens(from: persistentTokens).map({
+            // CEB start
+            // Print each PersistentToken as it is retrieved
+            print("Retrieving PersistentToken with Name:", PersistentToken.token.name)
+            // CEB end
             TokenRowModel(persistentToken: $0,
                           displayTime: displayTime,
                           digitGroupSize: digitGroupSize,

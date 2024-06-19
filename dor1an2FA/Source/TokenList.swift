@@ -53,8 +53,7 @@ struct TokenList: Component {
         let isFiltering = !(filter ?? "").isEmpty
         let rowModels = filteredTokens(from: persistentTokens).map({
             // CEB start
-            // Print each PersistentToken as it is retrieved
-            print("Retrieving PersistentToken with Name:", PersistentToken.token.name)
+            print("Retrieving PersistentToken: \(persistentToken.token.name), Issuer: \(persistentToken.token.issuer)") // Add domain if necessary
             // CEB end
             TokenRowModel(persistentToken: $0,
                           displayTime: displayTime,

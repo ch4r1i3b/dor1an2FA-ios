@@ -1,4 +1,4 @@
-# OneTimePassword
+# OneTimePassword 
 ### TOTP and HOTP one-time passwords for iOS
 
 [![Xcode CI status](https://github.com/mattrubin/OneTimePassword/actions/workflows/xcode.yml/badge.svg)](https://github.com/mattrubin/OneTimePassword/actions/workflows/xcode.yml)

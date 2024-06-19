@@ -22,12 +22,6 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 //
-/*
-Can you help me to modify the TokenList.swift file so it prints the contents of each PersistentToken saved
-at the moment it is retrieved from the KeyChain?
-Please, remember to mark each modification with //CEB start and // CEB end.
-*/
-
 //  TokenList.swift
 import Foundation
 import UIKit

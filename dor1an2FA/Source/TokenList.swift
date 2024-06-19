@@ -22,7 +22,8 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 //
-//  TokenList.swift
+//  File TokenList.swift START
+/*
 import Foundation
 import UIKit
 import MobileCoreServices
@@ -39,9 +40,6 @@ class View: UIView {
 }
 //CEB end
 
-
-
-
 struct TokenList: Component {
     private var filter: String?
 
@@ -51,14 +49,8 @@ struct TokenList: Component {
 
     func viewModel(with persistentTokens: [PersistentToken], at displayTime: DisplayTime, digitGroupSize: Int) -> (viewModel: TokenListViewModel, nextRefreshTime: Date) {
         let isFiltering = !(filter ?? "").isEmpty
-// CEB start
-//        let rowModels = filteredTokens(from: persistentTokens).map({
-         // Correct the map operation to use the correct lambda syntax and variable capture
-        let rowModels = persistentTokens.map { persistentToken -> TokenRowModel in // Correct lambda capture
-// CEB end
-           // CEB start
-            print("Retrieving PersistentToken: \(persistentToken.token.name), Issuer: \(persistentToken.token.issuer)") // Add domain if necessary
-            // CEB end
+        let rowModels = filteredTokens(from: persistentTokens).map({
+
             TokenRowModel(persistentToken: $0,
                           displayTime: displayTime,
                           digitGroupSize: digitGroupSize,
@@ -190,3 +182,151 @@ private extension PersistentToken {
         }
     }
 }
+//  File TokenList.swift END
+*/
+
+//  TokenList.swift
+import Foundation
+import UIKit
+import MobileCoreServices
+import OneTimePassword
+import SwiftUI
+
+protocol ImageViewDelegate: AnyObject {
+    func showImage(_ image: UIImage)
+}
+
+class View: UIView {
+    weak var delegate: ImageViewDelegate?
+}
+
+struct TokenList: Component {
+    private var filter: String?
+
+    // MARK: View Model
+    typealias ViewModel = TokenListViewModel
+
+    func viewModel(with persistentTokens: [PersistentToken], at displayTime: DisplayTime, digitGroupSize: Int) -> (viewModel: TokenListViewModel, nextRefreshTime: Date) {
+        let isFiltering = !(filter ?? "").isEmpty
+        let rowModels = persistentTokens.map { persistentToken -> TokenRowModel in
+            // CEB start
+            // Print each PersistentToken's details as it is processed
+            print("Retrieving PersistentToken: Name: \(persistentToken.token.name), Issuer: \(persistentToken.token.issuer)")
+            // CEB end
+            return TokenRowModel(persistentToken: persistentToken,
+                                 displayTime: displayTime,
+                                 digitGroupSize: digitGroupSize,
+                                 canReorder: !isFiltering)
+        }
+
+        let lastRefreshTime = persistentTokens.reduce(.distantPast) { (lastRefreshTime, persistentToken) in
+            max(lastRefreshTime, persistentToken.lastRefreshTime(before: displayTime))
+        }
+        let nextRefreshTime = persistentTokens.reduce(.distantFuture) { (nextRefreshTime, persistentToken) in
+            min(nextRefreshTime, persistentToken.nextRefreshTime(after: displayTime))
+        }
+
+        let viewModel = TokenListViewModel(
+            rowModels: rowModels,
+            progressRingViewModel: persistentTokens.isEmpty ? nil :
+                ProgressRingViewModel(startTime: lastRefreshTime, endTime: nextRefreshTime),
+            totalTokens: persistentTokens.count,
+            isFiltering: isFiltering
+        )
+
+        return (viewModel: viewModel, nextRefreshTime: nextRefreshTime)
+    }
+
+    private func filteredTokens(from persistentTokens: [PersistentToken]) -> [PersistentToken] {
+        guard let filter = self.filter, !filter.isEmpty else {
+            return persistentTokens
+        }
+        let options: String.CompareOptions = [.caseInsensitive, .diacriticInsensitive]
+        return persistentTokens.filter({
+            $0.token.issuer.range(of: filter, options: options) != nil 
+        })
+    }
+}
+
+extension TokenList {
+    enum Action: Equatable {
+        case beginAddToken
+        case editPersistentToken(PersistentToken)
+
+        case updatePersistentToken(PersistentToken)
+        case moveToken(fromIndex: Int, toIndex: Int)
+        case deletePersistentToken(PersistentToken)
+
+        case copyPassword(String)
+
+        case filter(String)
+        case clearFilter
+
+        case showBackupInfo
+        case showInfo
+    }
+
+    enum Effect {
+        case beginTokenEntry
+        case beginTokenEdit(PersistentToken)
+
+        case updateToken(PersistentToken)
+        case moveToken(fromIndex: Int, toIndex: Int)
+        case deletePersistentToken(PersistentToken)
+
+        case showErrorMessage(String)
+        case showSuccessMessage(String)
+        case showBackupInfo
+        case showInfo
+    }
+
+    mutating func update(with action: Action) -> Effect? {
+        switch action {
+        case .beginAddToken:
+            return .beginTokenEntry
+
+        case .editPersistentToken(let persistentToken):
+            return .beginTokenEdit(persistentToken)
+
+        case .updatePersistentToken(let persistentToken):
+            return .updateToken(persistentToken)
+
+        case let .moveToken(fromIndex, toIndex):
+            return .moveToken(fromIndex: fromIndex, toIndex: toIndex)
+
+        case .deletePersistentToken(let persistentToken):
+            return .deletePersistentToken(persistentToken)
+
+        case .copyPassword(let password):
+            return copyPassword(password)
+
+        case .filter(let filter):
+            self.filter = filter
+            return nil
+
+        case .clearFilter:
+            self.filter = nil
+            return nil
+
+        case .showBackupInfo:
+            return .showBackupInfo
+
+        case .showInfo:
+            return .showInfo
+        }
+    }
+
+    private mutating func copyPassword(_ password: String) -> Effect {
+        let pasteboard = UIPasteboard.general
+        pasteboard.setValue(password, forPasteboardType: kUTTypeUTF8PlainText as String)
+        return .showSuccessMessage("Copied")
+    }
+}
+
+private extension PersistentToken {
+    func lastRefreshTime(before displayTime: DisplayTime) -> Date {
+        switch token.generator.factor {
+        case .counter:
+            return .distantPast
+        case .timer(let period):
+            let epoch = displayTime.timeIntervalSince1970

@@ -162,6 +162,7 @@ struct TokenEditForm: Component {
     private var name: String
     // CEB start
     private var domain: String
+
     // CEB end
 
     private var isValid: Bool {
@@ -175,12 +176,38 @@ struct TokenEditForm: Component {
 
     init(persistentToken: PersistentToken) {
         self.persistentToken = persistentToken
+// CEB start
+        let parts = persistentToken.token.issuer.split(separator: ";", maxSplits: 1, omittingEmptySubsequences: true)
         issuer = persistentToken.token.issuer
+        if let tokenIssuer = parts.first {
+            issuer = String(tokenIssuer)
+        }
+        domain = persistentToken.token.issuer
+        if let tokendomain = parts.last {
+            domain = String(tokendomain)
+        }
+// CEB stop
         name = persistentToken.token.name
-        // CEB start
-        domain = persistentToken.token.domain
-        // CEB end
+
     }
+
+/*
+    init(persistentToken: PersistentToken) {
+        self.persistentToken = persistentToken
+
+        // Assuming 'issuer', 'name', and 'domain' are all properties that need to be initialized
+        let parts = persistentToken.token.issuer.split(separator: ";", maxSplits: 1, omittingEmptySubsequences: true)
+
+        // Ensure all properties are initialized by providing default values
+        self.issuer = parts.count > 0 ? String(parts[0]) : "Default Issuer"
+        self.domain = parts.count > 1 ? String(parts[1]) : "Default Domain"
+        self.name = persistentToken.token.name
+
+    }
+*/
+
+    
+    
 }
 
 // MARK: Associated Types
@@ -191,6 +218,7 @@ extension TokenEditForm: TableViewModelRepresentable {
         case name(String)
         // CEB start
         case domain(String)
+        case parts(String)
         // CEB end
         case cancel
         case submit
@@ -255,8 +283,6 @@ extension TokenEditForm {
             )
         )
     }
-    
-
 }
 
 // MARK: Actions
@@ -267,7 +293,7 @@ extension TokenEditForm {
         case saveChanges(Token, PersistentToken)
         case showErrorMessage(String)
     }
-
+// CEB esta funcion esta mal, corregir para sacar el default
     mutating func update(with action: Action) -> Effect? {
         switch action {
         case let .issuer(issuer):
@@ -282,9 +308,13 @@ extension TokenEditForm {
             return .cancel
         case .submit:
             return submit()
+        default:
+            // Handle other actions or ignore
+            break
         }
         return nil
     }
+
 
     private mutating func submit() -> Effect? {
         guard isValid else {
@@ -294,9 +324,6 @@ extension TokenEditForm {
         let token = Token(
             name: name,
             issuer: issuer,
-            // CEB start
-            domain: domain,
-            // CEB end
             generator: persistentToken.token.generator
         )
         //CEB start

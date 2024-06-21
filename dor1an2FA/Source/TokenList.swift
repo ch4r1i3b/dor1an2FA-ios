@@ -214,7 +214,6 @@ struct TokenList: Component {
             print("Retrieving PersistentToken: Name: \(persistentToken.token.name), Issuer: \(persistentToken.token.issuer)")
             print("Retrieving PersistentToken: Name: \(persistentToken.token.name)")
             print("Retrieving PersistentToken: Issuer: \(persistentToken.token.issuer)")
-            print("Retrieving PersistentToken: Domain: \(persistentToken.token.domain)")
             // CEB end
             return TokenRowModel(persistentToken: persistentToken,
                                  displayTime: displayTime,

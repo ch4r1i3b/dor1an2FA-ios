@@ -83,12 +83,7 @@ public struct Token: Equatable {
     public let name: String
 
     /// A string indicating the provider or service which issued the token.
-    public let issuer: String
-
-    // CEB start
-    /// A string indicating the domain associated with the token.
-    public let domain: String
-    // CEB end
+    public let issuer: String // CEB This will store 'tokenIssuer;domain'
 
     /// A password generator containing this token's secret, algorithm, etc.
     public let generator: Generator
@@ -108,9 +103,6 @@ public struct Token: Equatable {
     // CEB end
         self.name = name
         self.issuer = issuer
-        // CEB start
-        self.domain = domain  // Initialize domain
-        // CEB end
         self.generator = generator
     }
 
@@ -130,9 +122,7 @@ public struct Token: Equatable {
 
     /// - returns: A new `Token`, configured to generate the next password.
     public func updatedToken() -> Token {
-        // CEB start
-        return Token(name: name, issuer: issuer, domain: domain, generator: generator.successor())  // Include domain in updated token
-        // CEB end
+        return Token(name: name, issuer: issuer, generator: generator.successor())
     }
 }
 

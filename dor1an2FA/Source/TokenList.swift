@@ -212,6 +212,9 @@ struct TokenList: Component {
             // CEB start
             // Print each PersistentToken's details as it is processed
             print("Retrieving PersistentToken: Name: \(persistentToken.token.name), Issuer: \(persistentToken.token.issuer)")
+            print("Retrieving PersistentToken: Name: \(persistentToken.token.name)")
+            print("Retrieving PersistentToken: Issuer: \(persistentToken.token.issuer)")
+            print("Retrieving PersistentToken: Domain: \(persistentToken.token.domain)")
             // CEB end
             return TokenRowModel(persistentToken: persistentToken,
                                  displayTime: displayTime,
@@ -330,3 +333,17 @@ private extension PersistentToken {
             return .distantPast
         case .timer(let period):
             let epoch = displayTime.timeIntervalSince1970
+            return Date(timeIntervalSince1970: epoch - epoch.truncatingRemainder(dividingBy: period))
+        }
+    }
+
+    func nextRefreshTime(after displayTime: DisplayTime) -> Date {
+        switch token.generator.factor {
+        case .counter:
+            return .distantFuture
+        case .timer(let period):
+            let epoch = displayTime.timeIntervalSince1970
+            return Date(timeIntervalSince1970: epoch + (period - epoch.truncatingRemainder(dividingBy: period)))
+        }
+    }
+}

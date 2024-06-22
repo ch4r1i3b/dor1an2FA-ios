@@ -228,10 +228,12 @@ class TokenRowCell: UITableViewCell {
         titleLabel.attributedText = titleString
     }
 */
-    private func setName(_ name: String, issuer: String) { // CEB function to display issuer + name above the token
+    // CEB function to display issuer and name above the token
+    
+    private func setName(_ name: String, issuer: String) { 
         let titleString = NSMutableAttributedString()
 
-        // Split the issuer by ';' and use the first part only
+        // Split the issuer variable by ';' and use the first part (corresponding to the issuer) only
         let tokenIssuer = issuer.split(separator: ";", maxSplits: 1, omittingEmptySubsequences: true)
         let firstPartOfIssuer = tokenIssuer.first.map(String.init) ?? ""
 

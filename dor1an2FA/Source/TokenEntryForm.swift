@@ -486,9 +486,10 @@ extension TokenEntryForm {
 
         let token = Token(
             name: name,
-            issuer: issuer,
             //CEB start
-            domain: domain, // Include domain
+            //issuer: issuer,
+            issuer: issuer+";"+domain,
+            //domain: domain, // Include domain
             //CEB end
             generator: generator
         )

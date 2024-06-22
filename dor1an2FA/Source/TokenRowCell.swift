@@ -211,8 +211,9 @@ class TokenRowCell: UITableViewCell {
         setPassword(password)
         nextPasswordButton.isHidden = !showsButton
     }
-
-    private func setName(_ name: String, issuer: String) {
+// CEB start
+/*
+    private func setName(_ name: String, issuer: String) { // CEB funcion para mostrar issuer + name arriba del token
         let titleString = NSMutableAttributedString()
         if !issuer.isEmpty {
             let issuerAttributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15, weight: .medium)]
@@ -226,6 +227,29 @@ class TokenRowCell: UITableViewCell {
         }
         titleLabel.attributedText = titleString
     }
+*/
+    private func setName(_ name: String, issuer: String) { // CEB function to display issuer + name above the token
+        let titleString = NSMutableAttributedString()
+
+        // Split the issuer by ';' and use the first part only
+        let tokenIssuer = issuer.split(separator: ";", maxSplits: 1, omittingEmptySubsequences: true)
+        let firstPartOfIssuer = tokenIssuer.first.map(String.init) ?? ""
+
+        if !firstPartOfIssuer.isEmpty {
+            let issuerAttributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15, weight: .medium)]
+            titleString.append(NSAttributedString(string: firstPartOfIssuer, attributes: issuerAttributes))
+        }
+        if !firstPartOfIssuer.isEmpty && !name.isEmpty {
+            titleString.append(NSAttributedString(string: " "))
+        }
+        if !name.isEmpty {
+            titleString.append(NSAttributedString(string: name))
+        }
+        titleLabel.attributedText = titleString
+    }
+
+// CEB end
+    
     // CEB
     // aca se setea la pass para mostrar
     private func setPassword(_ password: String) {

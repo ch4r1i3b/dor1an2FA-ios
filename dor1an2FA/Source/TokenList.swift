@@ -211,7 +211,6 @@ struct TokenList: Component {
         let rowModels = persistentTokens.map { persistentToken -> TokenRowModel in
             // CEB start
             // Print each PersistentToken's details as it is processed
-            print("Retrieving PersistentToken: Name: \(persistentToken.token.name), Issuer: \(persistentToken.token.issuer)")
             print("Retrieving PersistentToken: Name: \(persistentToken.token.name)")
             print("Retrieving PersistentToken: Issuer: \(persistentToken.token.issuer)")
             // CEB end

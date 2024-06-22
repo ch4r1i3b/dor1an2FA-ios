@@ -190,24 +190,6 @@ struct TokenEditForm: Component {
         name = persistentToken.token.name
 
     }
-
-/*
-    init(persistentToken: PersistentToken) {
-        self.persistentToken = persistentToken
-
-        // Assuming 'issuer', 'name', and 'domain' are all properties that need to be initialized
-        let parts = persistentToken.token.issuer.split(separator: ";", maxSplits: 1, omittingEmptySubsequences: true)
-
-        // Ensure all properties are initialized by providing default values
-        self.issuer = parts.count > 0 ? String(parts[0]) : "Default Issuer"
-        self.domain = parts.count > 1 ? String(parts[1]) : "Default Domain"
-        self.name = persistentToken.token.name
-
-    }
-*/
-
-    
-    
 }
 
 // MARK: Associated Types
@@ -323,7 +305,10 @@ extension TokenEditForm {
 
         let token = Token(
             name: name,
-            issuer: issuer,
+// CEB start
+//          issuer: issuer
+// CEB end
+            issuer: issuer+";"+domain,
             generator: persistentToken.token.generator
         )
         //CEB start

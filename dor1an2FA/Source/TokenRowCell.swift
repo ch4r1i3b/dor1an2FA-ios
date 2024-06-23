@@ -228,9 +228,9 @@ class TokenRowCell: UITableViewCell {
         titleLabel.attributedText = titleString
     }
 */
-    // CEB function to display issuer and name above the token
-    
-    private func setName(_ name: String, issuer: String) { 
+// CEB function to display issuer and name above the token (domain is in issuer)
+/*
+    private func setName(_ name: String, issuer: String) {
         let titleString = NSMutableAttributedString()
 
         // Split the issuer variable by ';' and use the first part (corresponding to the issuer) only
@@ -249,8 +249,33 @@ class TokenRowCell: UITableViewCell {
         }
         titleLabel.attributedText = titleString
     }
+*/
+// CEB end  (domain is in issuer)
 
-// CEB end
+// CEB function to display issuer and name above the token (domain is in name)
+    
+    private func setName(_ name: String, issuer: String) {
+        let titleString = NSMutableAttributedString()
+
+        // Split the name variable by ';' and use the first part (corresponding to the name) only
+        let tokenName = name.split(separator: ";", maxSplits: 1, omittingEmptySubsequences: true)
+        let firstPartOfName = tokenName.first.map(String.init) ?? ""
+
+        if !firstPartOfName.isEmpty {
+            let nameAttributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15, weight: .medium)]
+            titleString.append(NSAttributedString(string: firstPartOfName, attributes: nameAttributes))
+        }
+        if !firstPartOfName.isEmpty && !issuer.isEmpty {
+            titleString.append(NSAttributedString(string: " "))
+        }
+        if !issuer.isEmpty {
+            titleString.append(NSAttributedString(string: issuer))
+        }
+        titleLabel.attributedText = titleString
+    }
+
+// CEB end  (domain is in name)
+    
     
     // CEB
     // aca se setea la pass para mostrar

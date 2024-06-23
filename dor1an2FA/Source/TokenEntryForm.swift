@@ -485,12 +485,19 @@ extension TokenEntryForm {
         }
 
         let token = Token(
-            name: name,
-            //CEB start
+
+            //CEB start (domain is in issuer)
             //issuer: issuer,
+            /*
+            name: name,
             issuer: issuer+";"+domain,
-            //domain: domain, // Include domain
-            //CEB end
+            */
+            //CEB end (domain is in issuer)
+            //CEB start (domain is in name)
+            //issuer: issuer,
+            name: name+";"+domain,
+            issuer: issuer,
+            //CEB end (domain is in name)
             generator: generator
         )
         //print(">>>>> token en TokenEntryForm: ", token)

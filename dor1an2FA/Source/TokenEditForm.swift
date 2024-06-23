@@ -176,7 +176,8 @@ struct TokenEditForm: Component {
 
     init(persistentToken: PersistentToken) {
         self.persistentToken = persistentToken
-// CEB start
+// CEB start (domain is in issuer)
+/*
         let parts = persistentToken.token.issuer.split(separator: ";", maxSplits: 1, omittingEmptySubsequences: true)
         issuer = persistentToken.token.issuer
         if let tokenIssuer = parts.first {
@@ -186,9 +187,24 @@ struct TokenEditForm: Component {
         if let tokendomain = parts.last {
             domain = String(tokendomain)
         }
-// CEB stop
         name = persistentToken.token.name
+*/
+// CEB stop (domain is in issuer)
 
+// CEB start (domain is in name)
+
+        let parts = persistentToken.token.name.split(separator: ";", maxSplits: 1, omittingEmptySubsequences: true)
+        name = persistentToken.token.name
+        if let tokenName = parts.first {
+            name = String(tokenName)
+        }
+        domain = persistentToken.token.name
+        if let namedomain = parts.last {
+            domain = String(namedomain)
+        }
+        issuer = persistentToken.token.issuer
+
+// CEB stop (domain is in name)
     }
 }
 
@@ -304,11 +320,21 @@ extension TokenEditForm {
         }
 
         let token = Token(
-            name: name,
-// CEB start
+// CEB start (domain is in issuer)
 //          issuer: issuer
-// CEB end
+/*
+            name: name,
             issuer: issuer+";"+domain,
+*/
+// CEB end (domain is in issuer)
+
+// CEB start (domain is in name)
+//          issuer: issuer
+
+            name: name+";"+domain,
+            issuer: issuer,
+
+// CEB end (domain is in name)
             generator: persistentToken.token.generator
         )
         //CEB start

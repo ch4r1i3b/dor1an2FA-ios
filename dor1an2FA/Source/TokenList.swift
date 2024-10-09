@@ -320,7 +320,14 @@ extension TokenList {
     private mutating func copyPassword(_ password: String) -> Effect {
         let pasteboard = UIPasteboard.general
         pasteboard.setValue(password, forPasteboardType: kUTTypeUTF8PlainText as String)
-        return .showSuccessMessage("Copied")
+    // CEB scanner start
+        print("Copied!")  // This prints "Copied!"
+        
+        // Trigger the QR scanner right after copying the password
+        //return .beginTokenEntry  // Reusing the action to start the scanner
+        // ojo, aca arrnaca el scanner, pero para cargar un token, hay que modificar el codigo para que verifique solo la url
+        return .showSuccessMessage("QR generated")
+        // CEB scanner end
     }
 }
 

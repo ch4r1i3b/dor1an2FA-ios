@@ -73,7 +73,7 @@ class AppController {
         }
 
         settings = Settings()
-
+// breakpoint here
         // If this is a demo, show the scanner even in the simulator.
         let deviceCanScan = QRScanner.deviceCanScan || CommandLine.isDemo
         component = Root(deviceCanScan: deviceCanScan)

@@ -40,7 +40,7 @@ struct TokenScanner: Component {
     struct ViewModel {
         var isScanning: Bool
     }
-
+// Breakpoint here (return sentence)
     var viewModel: ViewModel {
         return ViewModel(isScanning: !tokenFound)
     }

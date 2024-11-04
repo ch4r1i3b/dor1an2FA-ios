@@ -761,7 +761,7 @@
 				INFOPLIST_FILE = dor1an2FA/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = dor1an2FA;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				PRODUCT_BUNDLE_IDENTIFIER = me.ch4r1i3b.dor1an2FA.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = me2.ch4r1i3b.dor1an2FA.dev;
 				PRODUCT_NAME = dor1an2FA;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = YES;

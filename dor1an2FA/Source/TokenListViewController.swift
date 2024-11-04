@@ -1,8 +1,8 @@
-//
 //  TokenListViewController.swift
-//  Authenticator
+//  dor1an2FA (formerly Authenticator)
 //
-//  Copyright (c) 2013-2023 Authenticator authors
+//  Based on Authenticator, Copyright (c) 2015-2019 Authenticator authors
+//  Modified and renamed to dor1an2FA by [Your Name or Entity] in 2024
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -25,14 +25,14 @@
 
 import UIKit
 
-
 class TokenListViewController: UITableViewController {
     private let dispatchAction: (TokenList.Action) -> Void
     private var viewModel: TokenList.ViewModel
     private var ignoreTableViewUpdates = false
-    // CEB
-    private var imageView: UIImageView!
-    // CEB
+
+    // CEB QR start
+    private var qrScannerViewController: TokenScannerViewController? // To launch the scanner when a row is tapped
+    // CEB QR end
 
     init(viewModel: TokenList.ViewModel, dispatchAction: @escaping (TokenList.Action) -> Void) {
         self.viewModel = viewModel
@@ -133,6 +133,10 @@ class TokenListViewController: UITableViewController {
         self.title = "dor1an 2FA"
         self.view.backgroundColor = UIColor.otpBackgroundColor
 
+        // CEB QR start
+        // print("TokenListViewController: View did load")
+        // CEB QR end
+
         // Configure table view
         self.tableView.separatorStyle = .none
         self.tableView.indicatorStyle = .white
@@ -163,6 +167,10 @@ class TokenListViewController: UITableViewController {
 
         // Update with current viewModel
         self.updatePeripheralViews()
+
+        // CEB QR start
+        // print("TokenListViewController: View set up completed")
+        // CEB QR end
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -171,6 +179,11 @@ class TokenListViewController: UITableViewController {
         let searchSelector = #selector(TokenListViewController.filterTokens)
         searchBar.textField.addTarget(self, action: searchSelector, for: .editingChanged)
         searchBar.update(with: viewModel)
+
+        // CEB QR start
+        // por ahora no lo necesito
+        // print("TokenListViewController: View will appear, model: \(viewModel.rowModels)")
+        // CEB QR end
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -246,16 +259,6 @@ extension TokenListViewController {
         return .none
     }
 
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        let rowModel = viewModel.rowModels[indexPath.row]
-        switch editingStyle {
-        case .delete:
-            dispatchAction(rowModel.deleteAction)
-        default:
-            print("Unexpected edit style \(editingStyle.rawValue) for row at \(indexPath)")
-        }
-    }
-
     override func tableView(_ tableView: UITableView, moveRowAt source: IndexPath, to destination: IndexPath) {
         ignoreTableViewUpdates = true
         dispatchAction(.moveToken(fromIndex: source.row, toIndex: destination.row))
@@ -276,17 +279,80 @@ extension TokenListViewController {
         } else {
             dispatchAction(rowModel.selectAction)
         }
-        // CEB
-        
-        // Obtiene la celda seleccionada
-        if let cell = tableView.cellForRow(at: indexPath) as? TokenRowCell {
-            // Llama a la función showDynamicQRCode en la celda
-            cell.showDynamicQRCode()
-            // Deselecciona la fila después de mostrar la imagen estática
-            tableView.deselectRow(at: indexPath, animated: true)
-        }
-        // CEB
+
+        // CEB QR start
+        // When a row is selected, show QR scanner view
+        showQRScanner(forNewIssuer: false)
+        // CEB QR end
     }
+
+    // CEB QR start
+    // CEB camera type start
+    private func showQRScanner(forNewIssuer: Bool) {
+        //print("TokenListViewController: Launching QR Scanner")
+        
+        // CEB camera type start
+        let cameraType: QRScanner.CameraType = forNewIssuer ? .rear : .front
+        //print("Camera type: ",cameraType)
+        // CEB camera type end
+        
+        qrScannerViewController = TokenScannerViewController(
+            viewModel: TokenScanner.ViewModel(isScanning: true),
+            dispatchAction: { [weak self] action in
+                guard let self = self else { return }
+                
+                switch action {
+                case .scannerDecodedText(let text):
+                    print("Decoded QR Code: \(text)")
+                    
+                    // Stop the scanner after decoding
+                    self.qrScannerViewController?.stopScanning()
+                    
+                    // Dismiss the scanner view
+                    DispatchQueue.main.async {
+                        if let navigationController = self.navigationController {
+                            navigationController.popViewController(animated: true)
+                        }
+                        
+                        // CEB hostname mismatch start
+                        // Extract the hostname from the token list
+
+                        if let selectedIndexPath = self.tableView.indexPathForSelectedRow,
+                           let selectedCell = self.tableView.cellForRow(at: selectedIndexPath) as? TokenRowCell,
+                           let tokenName = selectedCell.rowModel?.hostname {
+
+                           // Split the tokenName to get the hostname part
+                            //print("tokenName: \(tokenName)")
+                            let tokenHostname = tokenName.split(separator: ";", maxSplits: 1).last?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                            // Print both strings for debugging
+                            //print("Decoded Text: \(text)")
+                           //print("Token Hostname: \(tokenHostname)")
+                           // Compare decoded string with the token hostname
+                           if text == tokenHostname {
+                                print("Hostnames match!")
+                                // Continue to show the QR code if they match
+                                selectedCell.showDynamicQRCode()
+                            } else {
+                                print("Hostnames do not match!")
+                                // Show a "hostname mismatch" QR code if they don't match
+                                selectedCell.showHostnameMismatchQRCode()
+                            }
+                        }
+                        // CEB hostname mismatch end
+                    }
+                    
+                default:
+                    break
+                }
+            },
+            cameraType: cameraType // CEB camera type usage
+        )
+        if let qrScannerViewController = qrScannerViewController {
+            navigationController?.pushViewController(qrScannerViewController, animated: true)
+        }
+    }
+    // CEB QR end
+    
 }
 
 // MARK: TokenListPresenter

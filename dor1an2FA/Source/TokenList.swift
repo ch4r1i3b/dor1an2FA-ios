@@ -1,8 +1,9 @@
 //
 //  TokenList.swift
-//  Authenticator
+//  dor1an2FA (formerly Authenticator)
 //
-//  Copyright (c) 2015-2019 Authenticator authors
+//  Based on Authenticator, Copyright (c) 2015-2019 Authenticator authors
+//  Modified and renamed to dor1an2FA by [Your Name or Entity] in 2024
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -22,169 +23,6 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 //
-//  File TokenList.swift START
-/*
-import Foundation
-import UIKit
-import MobileCoreServices
-import OneTimePassword
-// CEB start
-import SwiftUI
-
-protocol ImageViewDelegate: AnyObject {
-    func showImage(_ image: UIImage)
-}
-
-class View: UIView {
-    weak var delegate: ImageViewDelegate?
-}
-//CEB end
-
-struct TokenList: Component {
-    private var filter: String?
-
-    // MARK: View Model
-
-    typealias ViewModel = TokenListViewModel
-
-    func viewModel(with persistentTokens: [PersistentToken], at displayTime: DisplayTime, digitGroupSize: Int) -> (viewModel: TokenListViewModel, nextRefreshTime: Date) {
-        let isFiltering = !(filter ?? "").isEmpty
-        let rowModels = filteredTokens(from: persistentTokens).map({
-
-            TokenRowModel(persistentToken: $0,
-                          displayTime: displayTime,
-                          digitGroupSize: digitGroupSize,
-                          canReorder: !isFiltering)
-        })
-
-        let lastRefreshTime = persistentTokens.reduce(.distantPast) { (lastRefreshTime, persistentToken) in
-            max(lastRefreshTime, persistentToken.lastRefreshTime(before: displayTime))
-        }
-        let nextRefreshTime = persistentTokens.reduce(.distantFuture) { (nextRefreshTime, persistentToken) in
-            min(nextRefreshTime, persistentToken.nextRefreshTime(after: displayTime))
-        }
-
-        let viewModel = TokenListViewModel(
-            rowModels: rowModels,
-            progressRingViewModel: persistentTokens.isEmpty ? nil :
-                ProgressRingViewModel(startTime: lastRefreshTime, endTime: nextRefreshTime),
-            totalTokens: persistentTokens.count,
-            isFiltering: isFiltering
-        )
-
-        return (viewModel: viewModel, nextRefreshTime: nextRefreshTime)
-    }
-
-    private func filteredTokens(from persistentTokens: [PersistentToken]) -> [PersistentToken] {
-        guard let filter = self.filter, !filter.isEmpty else {
-            return persistentTokens
-        }
-        let options: String.CompareOptions = [.caseInsensitive, .diacriticInsensitive]
-        return persistentTokens.filter({
-            $0.token.issuer.range(of: filter, options: options) != nil 
-        })
-    }
-}
-
-extension TokenList {
-    enum Action: Equatable {
-        case beginAddToken
-        case editPersistentToken(PersistentToken)
-
-        case updatePersistentToken(PersistentToken)
-        case moveToken(fromIndex: Int, toIndex: Int)
-        case deletePersistentToken(PersistentToken)
-
-        case copyPassword(String)
-
-        case filter(String)
-        case clearFilter
-
-        case showBackupInfo
-        case showInfo
-    }
-
-    enum Effect {
-        case beginTokenEntry
-        case beginTokenEdit(PersistentToken)
-
-        case updateToken(PersistentToken)
-        case moveToken(fromIndex: Int, toIndex: Int)
-        case deletePersistentToken(PersistentToken)
-
-        case showErrorMessage(String)
-        case showSuccessMessage(String)
-        case showBackupInfo
-        case showInfo
-    }
-
-    mutating func update(with action: Action) -> Effect? {
-        switch action {
-        case .beginAddToken:
-            return .beginTokenEntry
-
-        case .editPersistentToken(let persistentToken):
-            return .beginTokenEdit(persistentToken)
-
-        case .updatePersistentToken(let persistentToken):
-            return .updateToken(persistentToken)
-
-        case let .moveToken(fromIndex, toIndex):
-            return .moveToken(fromIndex: fromIndex, toIndex: toIndex)
-
-        case .deletePersistentToken(let persistentToken):
-            return .deletePersistentToken(persistentToken)
-
-        case .copyPassword(let password):
-            return copyPassword(password)
-
-        case .filter(let filter):
-            self.filter = filter
-            return nil
-
-        case .clearFilter:
-            self.filter = nil
-            return nil
-
-        case .showBackupInfo:
-            return .showBackupInfo
-
-        case .showInfo:
-            return .showInfo
-        }
-    }
-
-    private mutating func copyPassword(_ password: String) -> Effect {
-        let pasteboard = UIPasteboard.general
-        pasteboard.setValue(password, forPasteboardType: kUTTypeUTF8PlainText as String)
-        return .showSuccessMessage("Copied")
-    }
-}
-
-private extension PersistentToken {
-    func lastRefreshTime(before displayTime: DisplayTime) -> Date {
-        switch token.generator.factor {
-        case .counter:
-            return .distantPast
-        case .timer(let period):
-            let epoch = displayTime.timeIntervalSince1970
-            return Date(timeIntervalSince1970: epoch - epoch.truncatingRemainder(dividingBy: period))
-        }
-    }
-
-    func nextRefreshTime(after displayTime: DisplayTime) -> Date {
-        switch token.generator.factor {
-        case .counter:
-            return .distantFuture
-        case .timer(let period):
-            let epoch = displayTime.timeIntervalSince1970
-            return Date(timeIntervalSince1970: epoch + (period - epoch.truncatingRemainder(dividingBy: period)))
-        }
-    }
-}
-//  File TokenList.swift END
-*/
-
 //  TokenList.swift
 import Foundation
 import UIKit
@@ -211,8 +49,8 @@ struct TokenList: Component {
         let rowModels = persistentTokens.map { persistentToken -> TokenRowModel in
             // CEB start
             // Print each PersistentToken's details as it is processed
-            print("Retrieving PersistentToken: Name: \(persistentToken.token.name)")
-            print("Retrieving PersistentToken: Issuer: \(persistentToken.token.issuer)")
+            // print("Retrieving PersistentToken: Name: \(persistentToken.token.name)")
+            // print("Retrieving PersistentToken: Issuer: \(persistentToken.token.issuer)")
             // CEB end
             return TokenRowModel(persistentToken: persistentToken,
                                  displayTime: displayTime,
@@ -321,13 +159,12 @@ extension TokenList {
         let pasteboard = UIPasteboard.general
         pasteboard.setValue(password, forPasteboardType: kUTTypeUTF8PlainText as String)
     // CEB scanner start
-        print("Copied!")  // This prints "Copied!"
-        
+        //print("Password copied to pasteboard")
         // Trigger the QR scanner right after copying the password
         //return .beginTokenEntry  // Reusing the action to start the scanner
-        // ojo, aca arrnaca el scanner, pero para cargar un token, hay que modificar el codigo para que verifique solo la url
-        return .showSuccessMessage("QR generated")
-        // CEB scanner end
+        return .showSuccessMessage("Face the front camera of the app towards the QR displayed in the browser")
+        //return nil
+    // CEB scanner end
     }
 }
 

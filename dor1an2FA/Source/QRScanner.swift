@@ -1,8 +1,8 @@
-//
 //  QRScanner.swift
-//  Authenticator
+//  dor1an2FA (formerly Authenticator)
 //
-//  Copyright (c) 2015-2023 Authenticator authors
+//  Based on Authenticator, Copyright (c) 2015-2019 Authenticator authors
+//  Modified and renamed to dor1an2FA by [Your Name or Entity] in 2024
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -34,10 +34,27 @@ class QRScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate {
     private let serialQueue = DispatchQueue(label: "QRScanner serial queue")
     private var captureSession: AVCaptureSession?
 
+    // CEB start camera type
+    enum CameraType {
+        case front
+        case rear
+    }
+    private var cameraType: CameraType = .rear // Default to rear camera
+    // CEB end camera type
+
+    // CEB start capture session error definition
+    enum CaptureSessionError: Error {
+        case noCaptureDevice
+        case noQRCodeMetadataType
+    }
+    // CEB end capture session error definition
+    
     func start(success: @escaping (AVCaptureSession) -> Void, failure: @escaping (Error) -> Void) {
         serialQueue.async {
             do {
-                let captureSession = try self.captureSession ?? QRScanner.createCaptureSession(withDelegate: self)
+                // CEB start pass camera type
+                let captureSession = try self.captureSession ?? QRScanner.createCaptureSession(withDelegate: self, cameraType: self.cameraType)
+                // CEB end pass camera type
                 captureSession.startRunning()
 
                 self.captureSession = captureSession
@@ -59,24 +76,21 @@ class QRScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate {
         }
     }
 
-    // MARK: Capture
-
-    enum CaptureSessionError: Error {
-        case noCaptureDevice
-        case noQRCodeMetadataType
-    }
-
-    private class func createCaptureSession(withDelegate delegate: AVCaptureMetadataOutputObjectsDelegate) throws -> AVCaptureSession {
+    // CEB start camera setup
+    private class func createCaptureSession(withDelegate delegate: AVCaptureMetadataOutputObjectsDelegate, cameraType: CameraType) throws -> AVCaptureSession {
         let captureSession = AVCaptureSession()
 
-        guard let captureDevice = AVCaptureDevice.default(for: .video) else {
+        // Choose the appropriate camera
+        let cameraPosition: AVCaptureDevice.Position = (cameraType == .rear) ? .back : .front
+        
+        guard let captureDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: cameraPosition) else {
             throw CaptureSessionError.noCaptureDevice
         }
+
         let captureInput = try AVCaptureDeviceInput(device: captureDevice)
         captureSession.addInput(captureInput)
 
         let captureOutput = AVCaptureMetadataOutput()
-        // The output must be added to the session before it can be checked for metadata types
         captureSession.addOutput(captureOutput)
         guard captureOutput.availableMetadataObjectTypes.contains(.qr) else {
             throw CaptureSessionError.noQRCodeMetadataType
@@ -86,6 +100,7 @@ class QRScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate {
 
         return captureSession
     }
+    // CEB end camera setup
 
     class var deviceCanScan: Bool {
         return (AVCaptureDevice.default(for: .video) != nil)
@@ -96,9 +111,6 @@ class QRScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate {
     }
 
     class func requestAccess(_ completionHandler: @escaping (Bool) -> Void) {
-        guard !CommandLine.isDemo else {
-            return
-        }
         AVCaptureDevice.requestAccess(for: .video) { accessGranted in
             DispatchQueue.main.async {
                 completionHandler(accessGranted)
@@ -106,6 +118,13 @@ class QRScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate {
         }
     }
 
+    // CEB start set camera
+    func setCamera(type: CameraType) {
+        self.cameraType = type
+        //print("QRScanner Camera type: ", type)
+    }
+    // CEB end set camera
+    
     // MARK: AVCaptureMetadataOutputObjectsDelegate
 
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
@@ -113,10 +132,9 @@ class QRScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate {
             if let metadata = metadata as? AVMetadataMachineReadableCodeObject,
                 metadata.type == .qr,
                 let string = metadata.stringValue {
-                    // Dispatch to the main queue because setMetadataObjectsDelegate doesn't
-                    DispatchQueue.main.async {
-                        self.delegate?.handleDecodedText(string)
-                    }
+                DispatchQueue.main.async {
+                    self.delegate?.handleDecodedText(string)
+                }
             }
         }
     }

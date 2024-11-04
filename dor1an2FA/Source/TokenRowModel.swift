@@ -1,8 +1,9 @@
 //
 //  TokenRowModel.swift
-//  Authenticator
+//  dor1an2FA (formerly Authenticator)
 //
-//  Copyright (c) 2015-2019 Authenticator authors
+//  Based on Authenticator, Copyright (c) 2015-2019 Authenticator authors
+//  Modified and renamed to dor1an2FA by [Your Name or Entity] in 2024
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +29,7 @@ import OneTimePassword
 
 struct TokenRowModel: Equatable, Identifiable {
     typealias Action = TokenList.Action
-    let name, issuer, domain, password: String
+    let name, issuer, hostname, password: String
     let showsButton: Bool
     let canReorder: Bool
     let buttonAction: Action
@@ -41,25 +42,38 @@ struct TokenRowModel: Equatable, Identifiable {
     init(persistentToken: PersistentToken, displayTime: DisplayTime, digitGroupSize: Int, canReorder reorderable: Bool = true) {
         let rawPassword = (try? persistentToken.token.generator.password(at: displayTime.date)) ?? ""
 
-        name = persistentToken.token.name
+        // CEB scan cancel start
+        let fullName = persistentToken.token.name
+        let nameParts = fullName.split(separator: ";", maxSplits: 1).map { String($0) }
+        if nameParts.count == 2 {
+            name = nameParts[0] // Before the semicolon
+            hostname = nameParts[1] // After the semicolon
+        } else {
+            name = fullName // If no semicolon, use the whole name
+            hostname = "" // No hostname
+        }
+        // CEB scan cancel end
+        
         issuer = persistentToken.token.issuer
         password = TokenRowModel.chunkPassword(rawPassword, chunkSize: digitGroupSize)
-        domain = persistentToken.token.issuer
-        
+
         //CEB start
+        /*
         print("---------")
-        print("name:  ",name)
-        print("issuer:",issuer)
-        print("pass:  ",password)
-        print("domain:",domain)
+        print("name:  ", name)
+        print("issuer:", issuer)
+        print("pass:  ", password)
+        print("hostname:", hostname)
         print("---------")
+        */
         // CEB end
-        if case .counter = 	persistentToken.token.generator.factor {
+
+        if case .counter = persistentToken.token.generator.factor {
             showsButton = true
         } else {
             showsButton = false
         }
-        //showsButton = false
+        
         buttonAction = .updatePersistentToken(persistentToken)
         selectAction = .copyPassword(rawPassword)
         editAction = .editPersistentToken(persistentToken)
@@ -67,7 +81,6 @@ struct TokenRowModel: Equatable, Identifiable {
         identifier = persistentToken.identifier
         canReorder = reorderable
     }
-
     func hasSameIdentity(as other: TokenRowModel) -> Bool {
         return (self.identifier == other.identifier)
     }

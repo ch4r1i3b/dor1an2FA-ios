@@ -1,8 +1,8 @@
-//
 //  TokenScanner.swift
-//  Authenticator
+//  dor1an2FA (formerly Authenticator)
 //
-//  Copyright (c) 2017-2023 Authenticator authors
+//  Based on Authenticator, Copyright (c) 2015-2019 Authenticator authors
+//  Modified and renamed to dor1an2FA by [Your Name or Entity] in 2024
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ struct TokenScanner: Component {
     struct ViewModel {
         var isScanning: Bool
     }
-// Breakpoint here (return sentence)
+
     var viewModel: ViewModel {
         return ViewModel(isScanning: !tokenFound)
     }
@@ -77,9 +77,8 @@ struct TokenScanner: Component {
         case .scannerDecodedText(let text):
             // Attempt to create a token from the decoded text
             guard let url = URL(string: text),
-                let token = try? Token(url: url) else {
-                    // Show an error message
-                    return .showErrorMessage("Invalid Token")
+                  let token = try? Token(url: url) else {
+                return .showErrorMessage("Invalid Token")
             }
             tokenFound = true
             return .saveNewToken(token)

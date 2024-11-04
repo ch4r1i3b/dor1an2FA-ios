@@ -1,8 +1,8 @@
-//
 //  TokenScannerViewController.swift
-//  Authenticator
+//  dor1an2FA (formerly Authenticator)
 //
-//  Copyright (c) 2013-2023 Authenticator authors
+//  Based on Authenticator, Copyright (c) 2015-2019 Authenticator authors
+//  Modified and renamed to dor1an2FA by [Your Name or Entity] in 2024
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,6 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 //
-
 import UIKit
 import AVFoundation
 import OneTimePassword
@@ -34,6 +33,36 @@ final class TokenScannerViewController: UIViewController, QRScannerDelegate {
     private var viewModel: TokenScanner.ViewModel
     private let dispatchAction: (TokenScanner.Action) -> Void
 
+    // CEB start scanner setup
+    init(viewModel: TokenScanner.ViewModel, dispatchAction: @escaping (TokenScanner.Action) -> Void, cameraType: QRScanner.CameraType) {
+        self.viewModel = viewModel
+        self.dispatchAction = dispatchAction
+        super.init(nibName: nil, bundle: nil)
+        scanner.setCamera(type: cameraType) // Set the camera type based on the scenario
+    }
+    // CEB end scanner setup
+    
+    // CEB start image blurring
+    private var blurEffectView: UIVisualEffectView?
+
+    private func applyBlurEffect() {
+        let blurEffect = UIBlurEffect(style: .light)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        
+        blurEffectView.frame = view.bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        view.addSubview(blurEffectView)
+        self.blurEffectView = blurEffectView
+    }
+
+    private func removeBlurEffect() {
+        blurEffectView?.removeFromSuperview()
+        blurEffectView = nil
+    }
+    // CEB end image blurring
+
+    
     private let permissionLabel: UILabel = {
         let linkTitle = "Go to Settings →"
         let message = "To add a new token via QR code, dor1an 2FA needs permission to access the camera.\n\(linkTitle)"
@@ -108,6 +137,15 @@ final class TokenScannerViewController: UIViewController, QRScannerDelegate {
         manualEntryBarButtonItem.accessibilityLabel = "Manual token entry"
         navigationItem.rightBarButtonItem = manualEntryBarButtonItem
 
+        // CEB scan cancel start
+        // Add a cancel button on the left side of the navigation bar
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .cancel,
+            target: self,
+            action: #selector(cancelScanner)
+        )
+        // CEB scan cancel end
+        
         videoLayer.videoGravity = .resizeAspectFill
         videoLayer.frame = view.layer.bounds
         view.layer.addSublayer(videoLayer)
@@ -126,15 +164,6 @@ final class TokenScannerViewController: UIViewController, QRScannerDelegate {
             view.addSubview(imageView)
         }
 
-        // CEB
-        let imageView = UIImageView(frame: view.bounds)
-        imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        imageView.contentMode = .scaleAspectFill
-        imageView.image = UIImage.demoScannerImage()
-        view.addSubview(imageView)
-        print (imageView)
-        // CEB
-        
         let overlayView = ScannerOverlayView(frame: view.bounds)
         overlayView.isUserInteractionEnabled = false
         view.addSubview(overlayView)
@@ -142,7 +171,9 @@ final class TokenScannerViewController: UIViewController, QRScannerDelegate {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        // CEB QR blurring start
+        applyBlurEffect() // Apply blur when the view appears
+        // CEB QR blurring end
         switch QRScanner.authorizationStatus {
         case .notDetermined:
             QRScanner.requestAccess { [weak self] accessGranted in
@@ -157,16 +188,21 @@ final class TokenScannerViewController: UIViewController, QRScannerDelegate {
         case .denied:
             showMissingAccessMessage()
         case .restricted:
-            // There's nothing we can do if camera access is restricted.
-            // This should only ever be reached if camera restrictions are changed while the app is running, because if
-            // the app is launched with restrictions already enabled, the deviceCanScan check will return false.
             dispatchAction(.beginManualTokenEntry)
         @unknown default:
-            // In the event of an unknown future enum case, fall back to manual entry.
             dispatchAction(.beginManualTokenEntry)
         }
     }
 
+    // CEB scan cancel start
+    @objc
+    private func cancelScanner() {
+        // Handle cancel action by dispatching the appropriate action and dismissing the view controller
+        dispatchAction(.cancel)
+        navigationController?.popViewController(animated: true)
+    }
+    // CEB scan cancel end
+    
     private func startScanning() {
         scanner.delegate = self
         scanner.start(success: { [weak self] captureSession in
@@ -182,9 +218,17 @@ final class TokenScannerViewController: UIViewController, QRScannerDelegate {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        // CEB QR remove blurring start
+        removeBlurEffect() // Remove blur when the view disappears
+        // CEB QR remove blurring end
         scanner.stop()
     }
 
+    //CEB QR scanner stop start
+    func stopScanning() {
+        scanner.stop() // Assuming the QRScanner instance has a stop method to stop the camera session
+    }
+    //CEB QR scanner stop end
     // MARK: Target Actions
 
     @objc

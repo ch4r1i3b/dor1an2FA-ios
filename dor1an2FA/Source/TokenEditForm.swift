@@ -1,8 +1,9 @@
 //
 //  TokenEditForm.swift
-//  Authenticator
+//  dor1an2FA (formerly Authenticator)
 //
-//  Copyright (c) 2015-2019 Authenticator authors
+//  Based on Authenticator, Copyright (c) 2015-2019 Authenticator authors
+//  Modified and renamed to dor1an2FA by [Your Name or Entity] in 2024
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -23,135 +24,6 @@
 //  SOFTWARE.
 //
 
-/*
-import OneTimePassword
-
-struct TokenEditForm: Component {
-    private let persistentToken: PersistentToken
-
-    private var issuer: String
-    private var name: String
-    private var isValid: Bool {
-        return !(issuer.isEmpty && name.isEmpty)
-    }
-
-    // MARK: Initialization
-
-    init(persistentToken: PersistentToken) {
-        self.persistentToken = persistentToken
-        issuer = persistentToken.token.issuer
-        name = persistentToken.token.name
-    }
-}
-
-// MARK: Associated Types
-
-extension TokenEditForm: TableViewModelRepresentable {
-    enum Action {
-        case issuer(String)
-        case name(String)
-        case cancel
-        case submit
-    }
-
-    typealias HeaderModel = TokenFormHeaderModel<Action>
-    typealias RowModel = TokenFormRowModel<Action>
-}
-
-// MARK: View Model
-
-extension TokenEditForm {
-    typealias ViewModel = TableViewModel<TokenEditForm>
-
-    var viewModel: ViewModel {
-        return TableViewModel(
-            title: "Edit Token",
-            leftBarButton: BarButtonViewModel(style: .cancel, action: .cancel),
-            rightBarButton: BarButtonViewModel(style: .done, action: .submit, enabled: isValid),
-            sections: [
-                [
-                    issuerRowModel,
-                    nameRowModel,
-                ],
-            ],
-            doneKeyAction: .submit
-        )
-    }
-
-    private var issuerRowModel: RowModel {
-        return .textFieldRow(
-            identity: "token.issuer",
-            viewModel: TextFieldRowViewModel(
-                issuer: issuer,
-                changeAction: Action.issuer
-            )
-        )
-    }
-
-    private var nameRowModel: RowModel {
-        return .textFieldRow(
-            identity: "token.name",
-            viewModel: TextFieldRowViewModel(
-                name: name,
-                // TODO: Change the behavior of the return key based on validation of the form.
-                returnKeyType: .done,
-                changeAction: Action.name
-            )
-        )
-    }
-    
-    private var domain: String
-
-    init(persistentToken: PersistentToken) {
-        self.persistentToken = persistentToken
-        issuer = persistentToken.token.issuer
-        name = persistentToken.token.name
-        domain = persistentToken.token.domain // Initialize domain from persistentToken
-    }
-
-}
-
-// MARK: Actions
-
-extension TokenEditForm {
-    enum Effect {
-        case cancel
-        case saveChanges(Token, PersistentToken)
-        case showErrorMessage(String)
-    }
-
-    
-    mutating func update(with action: Action) -> Effect? {
-            switch action {
-            case let .issuer(issuer):
-                self.issuer = issuer
-            case let .name(name):
-                self.name = name
-            case .cancel:
-                return .cancel
-            case .submit:
-                return submit()
-            }
-            return nil
-        }
-    
-    
-    
-    private mutating func submit() -> Effect? {
-        guard isValid else {
-            return .showErrorMessage("An issuer or name is required.")
-        }
-
-        let token = Token(
-            name: name,
-            issuer: issuer,
-            generator: persistentToken.token.generator
-        )
-
-        return .saveChanges(token, persistentToken)
-    }
-}
-*/
 
 import OneTimePassword
 
@@ -161,14 +33,12 @@ struct TokenEditForm: Component {
     private var issuer: String
     private var name: String
     // CEB start
-    private var domain: String
-
+    private var hostname: String
     // CEB end
 
     private var isValid: Bool {
 // CEB start
-//        return !(issuer.isEmpty && name.isEmpty) //CEB falta domain.isEmpty
-        return !(issuer.isEmpty && name.isEmpty && domain.isEmpty)
+        return !(issuer.isEmpty && name.isEmpty && hostname.isEmpty)
 // CEB stop
     }
 
@@ -176,35 +46,21 @@ struct TokenEditForm: Component {
 
     init(persistentToken: PersistentToken) {
         self.persistentToken = persistentToken
-// CEB start (domain is in issuer)
-/*
-        let parts = persistentToken.token.issuer.split(separator: ";", maxSplits: 1, omittingEmptySubsequences: true)
-        issuer = persistentToken.token.issuer
-        if let tokenIssuer = parts.first {
-            issuer = String(tokenIssuer)
-        }
-        domain = persistentToken.token.issuer
-        if let tokendomain = parts.last {
-            domain = String(tokendomain)
-        }
-        name = persistentToken.token.name
-*/
-// CEB stop (domain is in issuer)
 
-// CEB start (domain is in name)
+// CEB start (hostname is in name)
 
         let parts = persistentToken.token.name.split(separator: ";", maxSplits: 1, omittingEmptySubsequences: true)
         name = persistentToken.token.name
         if let tokenName = parts.first {
             name = String(tokenName)
         }
-        domain = persistentToken.token.name
-        if let namedomain = parts.last {
-            domain = String(namedomain)
+      hostname = persistentToken.token.name
+        if let namehostname = parts.last {
+            hostname = String(namehostname)
         }
         issuer = persistentToken.token.issuer
 
-// CEB stop (domain is in name)
+// CEB stop (hostname is in name)
     }
 }
 
@@ -215,7 +71,7 @@ extension TokenEditForm: TableViewModelRepresentable {
         case issuer(String)
         case name(String)
         // CEB start
-        case domain(String)
+        case hostname(String)
         case parts(String)
         // CEB end
         case cancel
@@ -241,7 +97,7 @@ extension TokenEditForm {
                     issuerRowModel,
                     nameRowModel,
                     // CEB start
-                    domainRowModel,
+                    hostnameRowModel,
                     // CEB end
                 ],
             ],
@@ -259,13 +115,13 @@ extension TokenEditForm {
         )
     }
     // CEB start
-    private var domainRowModel: RowModel {
+    private var hostnameRowModel: RowModel {
         return .textFieldRow(
-            identity: "token.domain",
+           identity: "token.hostname",
             viewModel: TextFieldRowViewModel(
-                domain: domain,
+                hostname: hostname,
                 returnKeyType: .done,
-                changeAction: Action.domain
+                changeAction: Action.hostname
             )
         )
     }
@@ -291,16 +147,15 @@ extension TokenEditForm {
         case saveChanges(Token, PersistentToken)
         case showErrorMessage(String)
     }
-// CEB esta funcion esta mal, corregir para sacar el default
-    mutating func update(with action: Action) -> Effect? {
+   mutating func update(with action: Action) -> Effect? {
         switch action {
         case let .issuer(issuer):
             self.issuer = issuer
         case let .name(name):
             self.name = name
         // CEB start
-        case let .domain(domain):
-            self.domain = domain
+        case let .hostname(hostname):
+            self.hostname = hostname
         // CEB end
         case .cancel:
             return .cancel
@@ -313,32 +168,22 @@ extension TokenEditForm {
         return nil
     }
 
-
     private mutating func submit() -> Effect? {
         guard isValid else {
-            return .showErrorMessage("An issuer, name, and domain are required.")
+            return .showErrorMessage("An issuer, name, and hostname are required.")
         }
 
         let token = Token(
-// CEB start (domain is in issuer)
-//          issuer: issuer
-/*
-            name: name,
-            issuer: issuer+";"+domain,
-*/
-// CEB end (domain is in issuer)
-
-// CEB start (domain is in name)
-//          issuer: issuer
-
-            name: name+";"+domain,
+// CEB start (hostname is in name)
+            name: name+";"+hostname,
             issuer: issuer,
+// CEB end (hostname is in name)
 
-// CEB end (domain is in name)
+
             generator: persistentToken.token.generator
         )
         //CEB start
-        //print(">>>>>> token en TokenEditForm = ",token)
+        //print(">>>>>> token in TokenEditForm = ",token)
         //CEB end
         return .saveChanges(token, persistentToken)
     }

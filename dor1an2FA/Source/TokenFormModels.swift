@@ -1,8 +1,9 @@
 // 
 //  TokenFormModels.swift
-//  Authenticator
+//  dor1an2FA (formerly Authenticator)
 //
-//  Copyright (c) 2015-2023 Authenticator authors
+//  Based on Authenticator, Copyright (c) 2015-2023 Authenticator authors
+//  Modified and renamed to dor1an2FA by [Your Name or Entity] in 2024
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -78,9 +79,10 @@ extension TextFieldRowViewModel {
     }
     
     // CEB Start
-        init(domain value: String, returnKeyType: UIReturnKeyType, changeAction: @escaping (String) -> Action) {
-            label = "Domain Name"
-            placeholder = "domain.com"
+
+        init(hostname value: String, returnKeyType: UIReturnKeyType, changeAction: @escaping (String) -> Action) {
+            label = "Hostname"
+            placeholder = "host.domain.com"
 
             autocapitalizationType = .none
             autocorrectionType = .no

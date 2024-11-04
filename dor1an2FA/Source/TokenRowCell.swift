@@ -1,8 +1,9 @@
 //
 //  TokenRowCell.swift
-//  Authenticator
+//  dor1an2FA (formerly Authenticator)
 //
-//  Copyright (c) 2013-2023 Authenticator authors
+//  Based on Authenticator, Copyright (c) 2013-2023 Authenticator authors
+//  Modified and renamed to dor1an2FA by [Your Name or Entity] in 2024
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -31,15 +32,18 @@ import WebKit
 
 class TokenRowCell: UITableViewCell {
     var dispatchAction: ((TokenRowModel.Action) -> Void)?
-    private var rowModel: TokenRowModel?
+// CEB hostname mismatch start
+    //private var rowModel: TokenRowModel?
+    internal var rowModel: TokenRowModel?
+// CEB hostname mismatch end
 
     private let titleLabel = UILabel()
     private let passwordLabel = UILabel()
     private let nextPasswordButton = UIButton(type: .contactAdd)
     
-    //CEB
+    //CEB start
     private var qrWebView: WKWebView?
-    //CEB
+    //CEB end
     
     // MARK: - Setup
 
@@ -98,6 +102,39 @@ class TokenRowCell: UITableViewCell {
         nextPasswordButton.accessibilityHint = "Double-tap to generate a new password."
         contentView.addSubview(nextPasswordButton)
     }
+    // CEB hostname mismatch start
+
+    func showHostnameMismatchQRCode() {
+        // Create a QR code with the text "hostname mismatch"
+        let mismatchText = "hostname mismatch"
+
+
+        let qrCodeFilter = CIFilter(name: "CIQRCodeGenerator")
+        qrCodeFilter?.setValue(mismatchText.data(using: .utf8), forKey: "inputMessage")
+        
+        if let qrCodeImage = qrCodeFilter?.outputImage {
+            let largerQRCodeImage = qrCodeImage.transformed(by: CGAffineTransform(scaleX: 12, y: 12))
+
+            let qrCodeImageView = UIImageView(image: UIImage(ciImage: largerQRCodeImage))
+            qrCodeImageView.contentMode = .center
+            qrCodeImageView.translatesAutoresizingMaskIntoConstraints = false
+
+            let alertController = UIAlertController(title: mismatchText, message: nil, preferredStyle: .alert)
+            alertController.view.addSubview(qrCodeImageView)
+
+            // Center the QR code in the alert
+            alertController.view.addConstraint(NSLayoutConstraint(item: qrCodeImageView, attribute: .centerX, relatedBy: .equal, toItem: alertController.view, attribute: .centerX, multiplier: 1, constant: 0))
+            alertController.view.addConstraint(NSLayoutConstraint(item: qrCodeImageView, attribute: .centerY, relatedBy: .equal, toItem: alertController.view, attribute: .centerY, multiplier: 1, constant: 0))
+
+            let closeAction = UIAlertAction(title: "Close", style: .default, handler: nil)
+            alertController.addAction(closeAction)
+            
+            if let viewController = findViewController() {
+                viewController.present(alertController, animated: true, completion: nil)
+            }
+        }
+    }
+    // CEB hostname mismatch end
 
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -121,9 +158,9 @@ class TokenRowCell: UITableViewCell {
         updateAppearance(with: rowModel)
         self.rowModel = rowModel
     }
-    // Agrego esta funcion para mostrar la imagen dinamica al hacer clic en la contrasena
+    // This function shows the dinamic image when the user clicks on the 6-digit token
     func showDynamicQRCode() {
-        // Genera el código QR con los datos de la contraseña
+        // 6-digit token QR generator
         if let password = rowModel?.password {
             let qrCodeFilter = CIFilter(name: "CIQRCodeGenerator")
             qrCodeFilter?.setValue(password.data(using: .utf8), forKey: "inputMessage")
@@ -146,37 +183,31 @@ class TokenRowCell: UITableViewCell {
                 //let alertController = UIAlertController(title: "Código QR Dinámico", message: nil, preferredStyle: .alert)
                 let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
                 alertController.view.addSubview(qrCodeImageView)
- //para centrar
+// CEB center image start
  //               let viewController = findViewController()
                 alertController.view.addConstraint(NSLayoutConstraint(item: qrCodeImageView, attribute: .centerX, relatedBy: .equal, toItem: alertController.view, attribute: .centerX, multiplier: 1, constant: 0))
                 alertController.view.addConstraint(NSLayoutConstraint(item: qrCodeImageView, attribute: .centerY, relatedBy: .equal, toItem: alertController.view, attribute: .centerY, multiplier: 1, constant: 0))
-// fin para centrar
-                // Ajusta el tamaño de la imagen del código QR si es necesario
-//                qrCodeImageView.frame = CGRect(x: 0, y: 0, width: 300, height: 300)
-                // Ajusta la posicion de la imagen del código QR si es necesario
-//                qrCodeImageView.center = CGPoint(x: alertController.view.bounds.midX - 50, y: alertController.view.bounds.midY - 350)
-                // Agrega un botón para cerrar la vista emergente
-                //alertController.addAction(UIAlertAction(title: "Cerrar", style: .default, handler: nil))
-                // Crear el botón "Cerrar"
+// CEB center image stop
+
                 
                 let closeAction = UIAlertAction(title: "Close", style: .default, handler: nil)
 
-                // Configurar la posición vertical del botón "Cerrar"
+                // Configure CLose button at center
                 if let button = closeAction.value(forKey: "__representer") as? UIView {
                     let verticalOffset: CGFloat = 5  // Ajusta este valor según tus preferencias
                     button.transform = button.transform.translatedBy(x: 10, y: verticalOffset)
                 }
 
-                // Asignar el botón "Cerrar" como la acción preferida
+                // Assign "Close" as preferred action
                 alertController.addAction(closeAction)
                 alertController.preferredAction = closeAction
                 
-                // Agrega un gesto de reconocimiento de toque a la imagen del código QR
+                // Adds touch recognize gesture to the QR image
                 let tapGesture = UITapGestureRecognizer(target: self, action: #selector(closeQRCode))
                 qrCodeImageView.isUserInteractionEnabled = true
                 qrCodeImageView.addGestureRecognizer(tapGesture)
                 
-                // Muestra la vista emergente
+                // Shows the popup image
                 if let viewController = findViewController() {
                     viewController.present(alertController, animated: true, completion: nil)
                 }
@@ -212,48 +243,8 @@ class TokenRowCell: UITableViewCell {
         nextPasswordButton.isHidden = !showsButton
     }
 // CEB start
-/*
-    private func setName(_ name: String, issuer: String) { // CEB funcion para mostrar issuer + name arriba del token
-        let titleString = NSMutableAttributedString()
-        if !issuer.isEmpty {
-            let issuerAttributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15, weight: .medium)]
-            titleString.append(NSAttributedString(string: issuer, attributes: issuerAttributes))
-        }
-        if !issuer.isEmpty && !name.isEmpty {
-            titleString.append(NSAttributedString(string: " "))
-        }
-        if !name.isEmpty {
-            titleString.append(NSAttributedString(string: name))
-        }
-        titleLabel.attributedText = titleString
-    }
-*/
-// CEB function to display issuer and name above the token (domain is in issuer)
-/*
-    private func setName(_ name: String, issuer: String) {
-        let titleString = NSMutableAttributedString()
+// CEB function to display issuer and name above the token (hostname is in name)
 
-        // Split the issuer variable by ';' and use the first part (corresponding to the issuer) only
-        let tokenIssuer = issuer.split(separator: ";", maxSplits: 1, omittingEmptySubsequences: true)
-        let firstPartOfIssuer = tokenIssuer.first.map(String.init) ?? ""
-
-        if !firstPartOfIssuer.isEmpty {
-            let issuerAttributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15, weight: .medium)]
-            titleString.append(NSAttributedString(string: firstPartOfIssuer, attributes: issuerAttributes))
-        }
-        if !firstPartOfIssuer.isEmpty && !name.isEmpty {
-            titleString.append(NSAttributedString(string: " "))
-        }
-        if !name.isEmpty {
-            titleString.append(NSAttributedString(string: name))
-        }
-        titleLabel.attributedText = titleString
-    }
-*/
-// CEB end  (domain is in issuer)
-
-// CEB function to display issuer and name above the token (domain is in name)
-    
     private func setName(_ name: String, issuer: String) {
         let titleString = NSMutableAttributedString()
 
@@ -274,11 +265,11 @@ class TokenRowCell: UITableViewCell {
         titleLabel.attributedText = titleString
     }
 
-// CEB end  (domain is in name)
-    
+// CEB end  (hostname is in name)
+
     
     // CEB
-    // aca se setea la pass para mostrar
+    // Here, the 6-digit token is set to be shown
     private func setPassword(_ password: String) {
         passwordLabel.attributedText = NSAttributedString(string: password, attributes: [.kern: 2])
     }
@@ -296,14 +287,7 @@ class TokenRowCell: UITableViewCell {
     }
     
     // MARK: - Actions
-    /*
-     @objc
-     func generateNextPassword() {
-     if let action = rowModel?.buttonAction {
-     dispatchAction?(action)
-     }
-     }
-     */
+
     @objc
     func generateNextPassword() {
         if let password = rowModel?.password {
@@ -349,20 +333,8 @@ class TokenRowCell: UITableViewCell {
         """
         return htmlString
     }
-    /*
+
     private func generateBase64QRCode(_ password: String) -> String? {
-        // Aquí deberías usar una biblioteca JavaScript para generar el código QR en base64.
-        // Puedes usar qrcode.js o cualquier otra librería similar.
-        // Retorna el código QR generado en formato base64.
-        // En este ejemplo, simplemente retornamos nil para indicar que la generación no está implementada.
-        return nil
-    }
-    */
-    private func generateBase64QRCode(_ password: String) -> String? {
-        // Aquí deberías usar una biblioteca JavaScript para generar el código QR en base64.
-        // Puedes usar qrcode.js o cualquier otra librería similar.
-        // Retorna el código QR generado en formato base64.
-        // En este ejemplo, simplemente generamos un valor de ejemplo.
         let exampleBase64QRCode = "base64-encoded-image-data"
         return exampleBase64QRCode
     }

@@ -14,10 +14,10 @@ dor1an2FA has all the advantages of Matt Rubin's Authenticator, like helping to 
 - Compatible: Full support for [time-based](https://tools.ietf.org/html/rfc6238) and [counter-based](https://tools.ietf.org/html/rfc4226) one-time passwords as standardized in RFC 4226 and 6238
 - Off the Grid: The app never connects to the internet, and your secret keys never leave your device.
 
-Adding the ability to transfer the generated 6-digit password token to the laptop automatically via screen-camera communication with the following features.
+
 
 **Added dor1an2FA features**:
-
+- Ability to transfer the generated 6-digit password token to the laptop automatically via screen-camera communication.
 - No need to type the codes.
 - Requester hostname check in order to minimize phishing attacks.
 - Browser extension for 6-digit password token autofill.

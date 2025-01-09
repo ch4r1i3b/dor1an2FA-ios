@@ -103,7 +103,7 @@ carthage update --no-build --use-submodules
 
 ## Known Limitations
 
-Please refer to dor1an2FA for [Known Limitations](https://github.com/ch4r1i3b/dor1an2FA?tab=readme-ov-file#known-limitations):
+Please refer to dor1an2FA repository for [Known Limitations](https://github.com/ch4r1i3b/dor1an2FA?tab=readme-ov-file#known-limitations).
 
 
 

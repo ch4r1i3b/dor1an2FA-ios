@@ -101,6 +101,12 @@ carthage update --no-build --use-submodules
 
 14. You are in!
 
+## Known Limitations
+
+Please refer to dor1an2FA for [Known Limitations](https://github.com/ch4r1i3b/dor1an2FA?tab=readme-ov-file#known-limitations):
+
+
+
 ## License
 
 This project is made available under the terms of the [MIT License](https://opensource.org/licenses/MIT).

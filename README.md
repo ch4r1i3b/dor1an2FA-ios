@@ -111,5 +111,5 @@ Please refer to dor1an2FA repository for [Known Limitations](https://github.com/
 
 This project is made available under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
-dor1an2FA is mainly based on Matt Rubin Authenticator under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+dor1an2FA-ios is mainly based on Matt Rubin Authenticator under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 

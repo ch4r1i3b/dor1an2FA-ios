@@ -1,3 +1,17 @@
+# [dor1an2FA] Changelog
+All notable changes to the project will be documented in this file.
+
+[dor1an2FA]: https://github.com/ch4r1i3b/dor1an2FA-ios
+
+## [0.2] - 2025-01-14
+Some fixes and ready so send to Apple.
+
+## [0.1] - 2024-11-04
+File cleaning previous to Ekoparty #20.
+
+## [0.0.1] - 2023-09-13
+Initial dor1an2FA commit.
+
 # [Authenticator] Changelog
 All notable changes to the project will be documented in this file.
 

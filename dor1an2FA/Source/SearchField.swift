@@ -63,7 +63,7 @@ class SearchField: UIView {
         // CEB
             attributes: [
                 .foregroundColor: UIColor.otpLightColor,
-                .font: UIFont.systemFont(ofSize: 16, weight: .light),
+                .font: UIFont.systemFont(ofSize: 26, weight: .light), // CEB font size set from 16 to 26 
             ]
         )
         textField.textColor = UIColor.otpLightColor

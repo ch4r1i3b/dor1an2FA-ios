@@ -95,16 +95,11 @@ extension KeychainTokenStore {
 
             return $0
         }
-        //CEB start
-        //print (">>>> persistentToken = ",persistentToken)
-        //CEB stop
+
     }
 
     func updatePersistentToken(_ persistentToken: PersistentToken) throws {
         let newToken = persistentToken.token.updatedToken()
-        //CEB start
-        //print(">>>>>>>>> persistentToken= ",newToken)
-        //CEB end
         try saveToken(newToken, toPersistentToken: persistentToken)
 
     }
@@ -117,12 +112,16 @@ extension KeychainTokenStore {
     }
 
     func deletePersistentToken(_ persistentToken: PersistentToken) throws {
+        // CEB start debug delete
+        // print("Atempting to delete token: \(persistentToken)");
+        // CEB end debug delete
         try keychain.delete(persistentToken)
         if let index = persistentTokens.firstIndex(of: persistentToken) {
             persistentTokens.remove(at: index)
         }
         saveTokenOrder()
     }
+    
 }
 
 // MARK: - Token Order Persistence

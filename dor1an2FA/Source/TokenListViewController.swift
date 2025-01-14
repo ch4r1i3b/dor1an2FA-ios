@@ -133,10 +133,6 @@ class TokenListViewController: UITableViewController {
         self.title = "dor1an 2FA"
         self.view.backgroundColor = UIColor.otpBackgroundColor
 
-        // CEB QR start
-        // print("TokenListViewController: View did load")
-        // CEB QR end
-
         // Configure table view
         self.tableView.separatorStyle = .none
         self.tableView.indicatorStyle = .white
@@ -168,9 +164,6 @@ class TokenListViewController: UITableViewController {
         // Update with current viewModel
         self.updatePeripheralViews()
 
-        // CEB QR start
-        // print("TokenListViewController: View set up completed")
-        // CEB QR end
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -181,7 +174,6 @@ class TokenListViewController: UITableViewController {
         searchBar.update(with: viewModel)
 
         // CEB QR start
-        // por ahora no lo necesito
         // print("TokenListViewController: View will appear, model: \(viewModel.rowModels)")
         // CEB QR end
     }
@@ -245,20 +237,25 @@ extension TokenListViewController {
         return cell
     }
 
+// CEB start delete
     private func updateCell(_ cell: TokenRowCell, forRowAtIndexPath indexPath: IndexPath) {
+        guard indexPath.row < viewModel.rowModels.count else {
+            return
+        }
         let rowModel = viewModel.rowModels[indexPath.row]
         cell.update(with: rowModel)
         cell.dispatchAction = dispatchAction
     }
 
-    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
-        if tableView.isEditing {
-            return .delete
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let tokenRow = viewModel.rowModels[indexPath.row]
+            // here is where token is actually deleted (though the Delete red square is shown)
+            dispatchAction(tokenRow.deleteAction)
         }
-        // Disable swipe-to-delete when the table view is not in editing mode.
-        return .none
     }
-
+// CEB end delete
+    
     override func tableView(_ tableView: UITableView, moveRowAt source: IndexPath, to destination: IndexPath) {
         ignoreTableViewUpdates = true
         dispatchAction(.moveToken(fromIndex: source.row, toIndex: destination.row))
@@ -324,9 +321,9 @@ extension TokenListViewController {
                            // Split the tokenName to get the hostname part
                             //print("tokenName: \(tokenName)")
                             let tokenHostname = tokenName.split(separator: ";", maxSplits: 1).last?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-                            // Print both strings for debugging
-                            //print("Decoded Text: \(text)")
-                           //print("Token Hostname: \(tokenHostname)")
+                           // Print both strings for debugging
+                           // print("Decoded Text: \(text)")
+                           // print("Token Hostname: \(tokenHostname)")
                            // Compare decoded string with the token hostname
                            if text == tokenHostname {
                                 print("Hostnames match!")

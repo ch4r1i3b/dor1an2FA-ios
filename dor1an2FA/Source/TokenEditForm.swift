@@ -32,9 +32,9 @@ struct TokenEditForm: Component {
 
     private var issuer: String
     private var name: String
-    // CEB start
+// CEB start
     private var hostname: String
-    // CEB end
+// CEB end
 
     private var isValid: Bool {
 // CEB start
@@ -70,10 +70,10 @@ extension TokenEditForm: TableViewModelRepresentable {
     enum Action {
         case issuer(String)
         case name(String)
-        // CEB start
+// CEB start
         case hostname(String)
         case parts(String)
-        // CEB end
+// CEB end
         case cancel
         case submit
     }
@@ -96,9 +96,9 @@ extension TokenEditForm {
                 [
                     issuerRowModel,
                     nameRowModel,
-                    // CEB start
+// CEB start
                     hostnameRowModel,
-                    // CEB end
+// CEB end
                 ],
             ],
             doneKeyAction: .submit
@@ -114,7 +114,7 @@ extension TokenEditForm {
             )
         )
     }
-    // CEB start
+// CEB start
     private var hostnameRowModel: RowModel {
         return .textFieldRow(
            identity: "token.hostname",
@@ -125,7 +125,7 @@ extension TokenEditForm {
             )
         )
     }
-    // CEB end
+// CEB end
     
     private var nameRowModel: RowModel {
         return .textFieldRow(
@@ -153,10 +153,10 @@ extension TokenEditForm {
             self.issuer = issuer
         case let .name(name):
             self.name = name
-        // CEB start
+// CEB start
         case let .hostname(hostname):
             self.hostname = hostname
-        // CEB end
+// CEB end
         case .cancel:
             return .cancel
         case .submit:
@@ -182,9 +182,9 @@ extension TokenEditForm {
 
             generator: persistentToken.token.generator
         )
-        //CEB start
-        //print(">>>>>> token in TokenEditForm = ",token)
-        //CEB end
+//CEB start
+//print(">>>>>> token in TokenEditForm = ",token)
+//CEB end
         return .saveChanges(token, persistentToken)
     }
 }

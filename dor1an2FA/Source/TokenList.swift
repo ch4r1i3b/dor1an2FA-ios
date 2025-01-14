@@ -162,7 +162,7 @@ extension TokenList {
         //print("Password copied to pasteboard")
         // Trigger the QR scanner right after copying the password
         //return .beginTokenEntry  // Reusing the action to start the scanner
-        return .showSuccessMessage("Face the front camera of the app towards the QR displayed in the browser")
+        return .showSuccessMessage("Please, align the phone's front camera with the QR code displayed on your computer screen.")
         //return nil
     // CEB scanner end
     }

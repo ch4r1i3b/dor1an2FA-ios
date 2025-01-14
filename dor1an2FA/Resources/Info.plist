@@ -40,7 +40,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>dor1an 2FA can import tokens by scanning QR codes.</string>
+	<string>dor1an 2FA can import tokens and validate hostnames by scanning QR codes.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIStatusBarStyle</key>

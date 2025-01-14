@@ -3,7 +3,7 @@
 //  dor1an2FA (formerly Authenticator)
 //
 //  Based on Authenticator, Copyright (c) 2015-2019 Authenticator authors
-//  Modified and renamed to dor1an2FA by [Your Name or Entity] in 2024
+//  Modified and renamed to dor1an2FA by ch4r1i3b in 2024
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
